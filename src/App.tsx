@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { Typography } from "./components/atoms/Typography";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [count, setCount] = useState(0);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <h1>Hello world, Counter</h1>
+      <p>{count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <div className="space-y-8 p-8">
+        <Typography variant="h1" as="h1">
+          Heading 1
+        </Typography>
+        <Typography variant="h2" as="h2">
+          Heading 2
+        </Typography>
+        <Typography variant="h3" as="h3">
+          Heading 3
+        </Typography>
+        <Typography variant="h4" as="h4">
+          Heading 4
+        </Typography>
+        <Typography variant="p">
+          This is a paragraph. Lorem ipsum dolor sit amet, consectetur
+          adipiscing elit. Donec auctor, nisl eget ultricies tincidunt, nunc
+          nisl aliquam nisl, eget aliquam nunc nisl eget nunc.
+        </Typography>
+        <Typography variant="blockquote" as="blockquote">
+          This is a blockquote. Lorem ipsum dolor sit amet, consectetur
+          adipiscing elit.
+        </Typography>
+        <Typography variant="list" as="ul">
+          <li>List item 1</li>
+          <li>List item 2</li>
+          <li>List item 3</li>
+        </Typography>
+        <Typography variant="inlineCode" as="code">
+          console.log('Hello, world!')
+        </Typography>
+        <Typography lead>This is lead text.</Typography>
+        <Typography large>This is large text.</Typography>
+        <Typography small>This is small text.</Typography>
+        <Typography muted>This is muted text.</Typography>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
