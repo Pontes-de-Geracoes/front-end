@@ -15,8 +15,8 @@ const Home = () => {
       <HowItWorks />
       <Benefits />
       <Statistics />
-      <CallToAction />
       <Testimonials />
+      <CallToAction />
     </Container>
   );
 };

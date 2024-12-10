@@ -5,7 +5,8 @@ import { Typography } from "../atoms/typography";
 const Hero = () => {
   return (
     <Container
-      className="flex flex-col md:flex-row items-center justify-center min-h-[calc(100vh-96px)]"
+      variant={"firstSection"}
+      className="flex flex-col md:flex-row items-center justify-center "
       size={"small"}
     >
       <div className="w-3/5 flex flex-col text-center items-center gap-4 md:text-left md:items-start">
