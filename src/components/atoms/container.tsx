@@ -8,7 +8,7 @@ const containerVariants = cva("w-full mx-auto", {
       small: "max-w-5xl",
     },
     variant: {
-      main: "flex flex-col select-none mx-auto px-6 max-w-full ",
+      main: "flex flex-col select-none mx-auto px-6 max-w-7xl",
       section: "min-h-screen  pb-20",
       firstSection: "min-h-[calc(100vh-96px)] pb-20",
     },
