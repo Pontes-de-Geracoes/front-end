@@ -10,8 +10,10 @@ const Header = () => {
   return (
     <header className="flex justify-center p-6">
       <Container as="div" className="flex justify-between items-center">
-        <Logo className="hidden md:block" />
-        <SideBar />
+        <div className="max-h-12">
+          <Logo className="hidden md:block " />
+          <SideBar />
+        </div>
         <nav className="hidden md:block">
           <ul className="flex gap-10">
             {routes.map((route) => (
