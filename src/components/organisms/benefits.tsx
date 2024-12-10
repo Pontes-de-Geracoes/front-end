@@ -50,7 +50,7 @@ const Benefits = () => {
         </div>
       </div>
       <img
-        src="/imgs/volunteering-animate.svg"
+        src="/imgs/benefits.svg"
         alt=""
         className="md:w-2/5 w-full flex justify-center self"
       />
