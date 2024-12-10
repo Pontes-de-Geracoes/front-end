@@ -15,25 +15,28 @@ import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
-import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
-import Anchor from "../atoms/anchor";
+import {
+  registerSchema,
+  RegisterSchema,
+} from "../../schemes/user/register.schema";
 import { Link } from "react-router";
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
 
   // 1. Define your form.
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: LoginSchema) {
+  function onSubmit(values: RegisterSchema) {
     setLoading(true);
 
     // 3. Handle your form submission.
@@ -97,21 +100,39 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirme a senha</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Confirme a senha"
+                  type="password"
+                  {...field}
+                />
+              </FormControl>
+              <FormDescription>Confirme a senha digitada.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" className="w-full">
           {loading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
         </Button>
         <Typography variant={"small"} className="text-center">
-          Não tem uma conta ainda ?{" "}
+          Já tem uma conta conosco ?{" "}
           <Link
-            to="/register"
+            to="/login"
             className="text-primary hover:underline hover:underline-offset-4"
           >
-            Crie uma agora
+            Faça login
           </Link>
         </Typography>
       </form>
     </Form>
   );
 };
-export default LoginForm;
+export default RegisterForm;
