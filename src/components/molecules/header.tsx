@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { routes } from "../../utils/route";
 import Anchor from "../atoms/anchor";
 import { Button } from "../atoms/button";
@@ -21,7 +22,9 @@ const Header = () => {
           </ul>
         </nav>
         <div className="flex gap-3">
-          <Button>Login</Button>
+          <Button>
+            <Link to={"/login"}>Login</Link>
+          </Button>
           <Button variant={"outline"}>Sign Up</Button>
         </div>
       </Container>

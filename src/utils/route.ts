@@ -1,7 +1,7 @@
 export const routes = [
   {
     name: "Home",
-    href: "#",
+    href: "/",
   },
   {
     name: "Services",

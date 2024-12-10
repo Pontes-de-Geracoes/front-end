@@ -28,11 +28,11 @@ const HowItWorks = () => {
   return (
     <Container
       variant={"section"}
-      className="flex justify-center flex-col gap-28
+      className="flex justify-center flex-col gap-14 md:gap-28
    items-center"
     >
       <div className="flex flex-col md:flex-row w-full items-center">
-        <img src="/imgs/how-it-work-animate.svg" alt="" className="md:w-2/5" />
+        <img src="/imgs/how-it-work.svg" alt="" className="md:w-2/5" />
         <div className="text-center flex flex-col gap-3 ">
           <Typography variant={"large"}>Conexão</Typography>
           <Typography variant="h1" as="h2">
