@@ -1,14 +1,6 @@
 import { Box } from "lucide-react";
 import Container from "../atoms/container";
 import { Typography } from "../atoms/typography";
-/*
-Um sistema prático para interações enriquecedoras entre gerações.
-Visualize perfis de idosos e encontre a ajuda que você precisa.
-Agende atividades presenciais ou virtuais de forma simples e rápida.
-Nosso sistema permite que jovens e idosos se registrem, compartilhem necessidades e planejem atividades.
-Filtre por interesses comuns e tipos de suporte desejados para facilitar a conexão.
-Confirme encontros e registre as atividades realizadas para um histórico acessível.
-*/
 
 const cards = [
   {
