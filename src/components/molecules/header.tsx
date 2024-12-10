@@ -25,7 +25,9 @@ const Header = () => {
           <Button>
             <Link to={"/login"}>Login</Link>
           </Button>
-          <Button variant={"outline"}>Sign Up</Button>
+          <Button variant={"outline"}>
+            <Link to={"/register"}>Criar conta</Link>
+          </Button>
         </div>
       </Container>
     </header>
