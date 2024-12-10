@@ -33,8 +33,8 @@ const infos = [
     href: "#",
   },
   {
-    name: "Termos de Serviço",
-    href: "#",
+    name: "People illustrations by Storyset",
+    href: "https://storyset.com/people",
   },
   {
     name: "Configurações de Cookies",

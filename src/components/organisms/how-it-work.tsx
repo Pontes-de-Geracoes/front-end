@@ -31,17 +31,27 @@ const HowItWorks = () => {
       className="flex justify-center flex-col gap-28
    items-center"
     >
-      <div className="text-center flex flex-col gap-3 max-w-[768px]">
-        <Typography variant={"large"}>Conexão</Typography>
-        <Typography variant="h1" as="h2">
-          Como funciona a nossa plataforma de voluntariado
-        </Typography>
-        <Typography>
-          Nosso sistema oferece um registro simples para jovens e idosos,
-          facilitando a conexão entre eles. Com perfis filtráveis, é possível
-          encontrar rapidamente o suporte necessário ou as habilidades
-          desejadas.
-        </Typography>
+      <div className="flex flex-col md:flex-row w-full items-center">
+        <img src="/imgs/how-it-work-animate.svg" alt="" className="md:w-2/5" />
+        <div className="text-center flex flex-col gap-3 ">
+          <Typography variant={"large"}>Conexão</Typography>
+          <Typography variant="h1" as="h2">
+            Como funciona a nossa plataforma de voluntariado
+          </Typography>
+          <div className="relative">
+            <Typography>
+              Nosso sistema oferece um registro simples para jovens e idosos,
+              facilitando a conexão entre eles. Com perfis filtráveis, é
+              possível encontrar rapidamente o suporte necessário ou as
+              habilidades desejadas.
+            </Typography>
+            <img
+              src="/imgs/arrow-down.svg"
+              alt=""
+              className="hidden xl:block md:absolute  justify-center w-full md:left-96  self-center md:right-1/2 md:w-80"
+            />
+          </div>
+        </div>
       </div>
       <div className="flex flex-col md:flex-row gap-8">
         {cards.map((card) => (

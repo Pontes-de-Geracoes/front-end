@@ -1,5 +1,6 @@
 import Container from "../atoms/container";
 import Benefits from "../organisms/benefits";
+import CallToAction from "../organisms/call-to-action";
 import FeatureList from "../organisms/feature-list";
 import Hero from "../organisms/hero";
 import HowItWorks from "../organisms/how-it-work";
@@ -10,10 +11,11 @@ const Home = () => {
   return (
     <Container as="main" variant={"main"}>
       <Hero />
-      <HowItWorks />
       <FeatureList />
+      <HowItWorks />
       <Benefits />
       <Statistics />
+      <CallToAction />
       <Testimonials />
     </Container>
   );
