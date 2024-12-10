@@ -18,6 +18,7 @@ import { useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
 import Anchor from "../atoms/anchor";
+import { Link } from "react-router";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -26,8 +27,8 @@ const LoginForm = () => {
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "sadfsdfsadf@gmail.com",
-      password: "vitor66X",
+      email: "",
+      password: "",
     },
   });
 
@@ -102,12 +103,12 @@ const LoginForm = () => {
         </Button>
         <Typography variant={"small"} className="text-center">
           Não tem uma conta ainda ?{" "}
-          <Anchor
-            href="/register"
+          <Link
+            to="/register"
             className="text-primary hover:underline hover:underline-offset-4"
           >
             Crie uma agora
-          </Anchor>
+          </Link>
         </Typography>
       </form>
     </Form>
