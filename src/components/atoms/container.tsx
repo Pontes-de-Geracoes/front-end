@@ -1,14 +1,15 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
-const containerVariants = cva("w-full", {
+const containerVariants = cva("w-full mx-auto", {
   variants: {
     size: {
       default: "max-w-7xl",
       small: "max-w-5xl",
     },
     variant: {
-      main: "flex min-h-[calc(100vh-72px)] select-none justify-center p-6 max-w-full",
+      main: "flex flex-col select-none justify-center p-6 max-w-full",
+      section: "min-h-screen",
     },
   },
   defaultVariants: {
@@ -18,7 +19,7 @@ const containerVariants = cva("w-full", {
 
 type ContainerProps = React.HTMLAttributes<HTMLElement> &
   VariantProps<typeof containerVariants> & {
-    as?: "section" | "main";
+    as?: "section" | "main" | "div";
   };
 
 const Container = ({
