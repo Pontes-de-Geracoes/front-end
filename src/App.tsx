@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Typography } from "./components/atoms/Typography";
+import { Typography } from "./components/atoms/typography";
+import { Button } from "./components/ui/button";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -7,7 +8,8 @@ function App() {
     <div>
       <h1>Hello world, Counter</h1>
       <p>{count}</p>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <Button onClick={() => setCount(count + 1)}>Increment</Button>
+      <Button onClick={() => setCount(count + 2)}>Decrement</Button>
       <div className="space-y-8 p-8">
         <Typography variant="h1" as="h1">
           Heading 1
