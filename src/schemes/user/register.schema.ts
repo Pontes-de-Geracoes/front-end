@@ -2,9 +2,21 @@ import { z } from "zod";
 
 export const registerSchema = z
   .object({
+    username: z.string().min(3, {
+      message: "Seu nome de usuário deve ter no mínimo 3 caracteres.",
+    }),
+    age: z.number().min(18, {
+      message: "Você deve ter no mínimo 18 anos para se cadastrar.",
+    }),
     email: z.string().email({
       message: "Por favor entre um email válido.",
     }),
+    type: z.enum(["elderly", "volunteer"]),
+    meetingPreference: z.enum(["presential", "remote", "both"]),
+    uf: z.string().length(2, {
+      message: "Por favor entre a sigla do seu estado.",
+    }),
+    town: z.string(),
     password: z
       .string()
       .min(8, {

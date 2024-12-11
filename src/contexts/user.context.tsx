@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
 import { validatingToken } from "../services/auth/validedToken.service";
@@ -15,18 +15,25 @@ export type UserContextSchema = {
 
 const emptyUser: UserInfoScheme = {
   id: 0,
-  username: "",
-  email: "",
+  username: "Vítor Oliveira",
+  email: "caulicons@gmail.com",
   type: "",
-  photo: "",
+  photo:
+    "https://www.petmag.com.br/app/uploads/petteca/famosos/8372/batatinha-01.jpg",
 };
 
-export const UserContext = React.createContext<UserContextSchema | null>(null);
+export const UserContext = React.createContext<UserContextSchema>({
+  user: emptyUser,
+  isAuthenticated: false,
+  update: () => {},
+  logOut: () => {},
+  setIsAuthenticated: () => {},
+});
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  /* useEffect(() => {
+  useEffect(() => {
     checkingToken();
-  }, []); */
+  }, []);
 
   const navigate = useNavigate();
   //const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -78,9 +85,9 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       user,
       logOut,
       update,
-      //isLoading,
       isAuthenticated,
       setIsAuthenticated,
+      //isLoading,
     }),
     [user, isAuthenticated, logOut]
   );
