@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "../atoms/select";
 import { DatePicker } from "../atoms/date-picker";
+import { fetchCities, fetchStates } from "../../utils/ibge";
 
 type states = {
   id: number;
@@ -61,53 +62,17 @@ const RegisterForm = () => {
   });
 
   useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch(
-          "http://servicodados.ibge.gov.br/api/v1/localidades/estados"
-        );
-        const data = await response.json();
-        setStates(
-          data.sort((a: states, b: states) => a.nome.localeCompare(b.nome))
-        );
-      } catch (error) {
-        console.error("Error fetching states:", error);
-        toast({
-          title: "Erro ao carregar estados",
-          description: "Não foi possível carregar a lista de estados.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchStates();
+    (async () => {
+      const states = await fetchStates();
+      setStates(states);
+    })();
   }, []);
 
   useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${form.watch(
-            "uf"
-          )}/municipios`
-        );
-        const data = await response.json();
-        setCities(
-          data.sort((a: { nome: string }, b: { nome: string }) =>
-            a.nome.localeCompare(b.nome)
-          )
-        );
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-        toast({
-          title: "Erro ao carregar cidades",
-          description: "Não foi possível carregar a lista de cidades.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchCities();
+    (async () => {
+      const cities = await fetchCities(form.getValues("uf"));
+      setCities(cities);
+    })();
   }, [form.watch("uf")]);
 
   function onSubmit(values: RegisterSchema) {
@@ -140,7 +105,7 @@ const RegisterForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-3 w-full md:w-1/2 "
+        className="space-y-3 w-full md:w-1/2"
       >
         <FormField
           control={form.control}
@@ -177,7 +142,6 @@ const RegisterForm = () => {
               <FormControl>
                 <Input placeholder="Senha" type="password" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -324,8 +288,6 @@ const RegisterForm = () => {
                   </SelectItem>
                 </SelectContent>
               </Select>
-
-              <FormDescription> </FormDescription>
               <FormMessage />
             </FormItem>
           )}
