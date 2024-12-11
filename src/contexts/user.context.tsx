@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Cookies from "js-cookie";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
 import { validatingToken } from "../services/auth/validedToken.service";
@@ -17,9 +17,13 @@ const emptyUser: UserInfoScheme = {
   id: 0,
   username: "Vítor Oliveira",
   email: "caulicons@gmail.com",
-  type: "",
+  type: "elderly",
   photo:
     "https://www.petmag.com.br/app/uploads/petteca/famosos/8372/batatinha-01.jpg",
+  age: 22,
+  meetingPreference: "remote",
+  uf: "SP",
+  town: "São Paulo",
 };
 
 export const UserContext = React.createContext<UserContextSchema>({
@@ -31,10 +35,10 @@ export const UserContext = React.createContext<UserContextSchema>({
 });
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  useEffect(() => {
+  /* useEffect(() => {
     checkingToken();
   }, []);
-
+ */
   const navigate = useNavigate();
   //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);

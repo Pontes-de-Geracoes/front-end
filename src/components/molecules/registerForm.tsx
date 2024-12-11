@@ -53,6 +53,7 @@ const RegisterForm = () => {
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -194,12 +195,11 @@ const RegisterForm = () => {
                   {...field}
                 />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex flex-col md:flex-row gap-4  ">
+        <div className="flex flex-col sm:flex-row gap-4  ">
           <FormField
             control={form.control}
             name="type"
@@ -230,21 +230,78 @@ const RegisterForm = () => {
               </FormItem>
             )}
           />
-          {form.watch("type") === "elderly" && (
-            <FormField
-              control={form.control}
-              name="age"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Data de Nascimento</FormLabel>
+          <FormField
+            control={form.control}
+            name="age"
+            render={({ field }) => (
+              <FormItem className="flex flex-col w-full">
+                <FormLabel>Data de Nascimento</FormLabel>
+                <FormControl className="">
+                  <DatePicker onDateChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-2">
+          <FormField
+            control={form.control}
+            name="uf"
+            render={({ field }) => (
+              <FormItem className="w-full md:w-6/12">
+                <FormLabel>Estado</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
-                    <DatePicker onDateChange={field.onChange} />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Escolha a sua cidade" />
+                    </SelectTrigger>
                   </FormControl>
+                  <SelectContent>
+                    {states.map((state) => (
+                      <SelectItem key={state.id} value={state.sigla}>
+                        {state.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="town"
+            render={({ field }) => {
+              return (
+                <FormItem className="w-full">
+                  <FormLabel>Cidade</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger disabled={!form.watch("uf")}>
+                        <SelectValue placeholder="Escolha a sua cidade" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cities.map((city) => (
+                        <SelectItem key={city.id} value={city.nome}>
+                          {city.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
-              )}
-            />
-          )}
+              );
+            }}
+          />
         </div>
 
         <FormField
@@ -273,67 +330,7 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
-        {(form.watch("meetingPreference") === "presential" ||
-          form.watch("meetingPreference") === "both") && (
-          <div className="flex flex-col md:flex-row gap-2">
-            <FormField
-              control={form.control}
-              name="uf"
-              render={({ field }) => (
-                <FormItem className="w-6/12">
-                  <FormLabel>Estado</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Escolha a sua cidade" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {states.map((state) => (
-                        <SelectItem key={state.id} value={state.sigla}>
-                          {state.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="town"
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Cidade</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger disabled={!form.watch("uf")}>
-                          <SelectValue placeholder="Escolha a sua cidade" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {cities.map((city) => (
-                          <SelectItem key={city.id} value={city.nome}>
-                            {city.nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          </div>
-        )}
+
         <Button type="submit" className="w-full">
           {loading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
         </Button>
