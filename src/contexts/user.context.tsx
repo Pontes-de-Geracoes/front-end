@@ -24,6 +24,7 @@ const emptyUser: UserInfoScheme = {
   meetingPreference: "remote",
   uf: "SP",
   town: "São Paulo",
+  bio: "I'm a software developer.",
 };
 
 export const UserContext = React.createContext<UserContextSchema>({
@@ -42,7 +43,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   async function checkingToken() {
     //setIsLoading(true);

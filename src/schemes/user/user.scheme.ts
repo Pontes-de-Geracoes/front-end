@@ -48,6 +48,7 @@ export const userScheme = z.object({
       }
     ),
   confirmPassword: z.string(),
+  bio: z.string().max(500, {}).optional(),
 });
 
 export type UserSchema = z.infer<typeof userScheme>;
