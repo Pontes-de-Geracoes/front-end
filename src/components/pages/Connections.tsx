@@ -24,6 +24,7 @@ import {
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Button } from "../atoms/button";
 import UserCardList from "../molecules/userCard/userCardList";
+import { UserModal } from "../molecules/userCard/user-modal";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -36,7 +37,7 @@ type filterScheme = z.infer<typeof filterScheme>;
 
 const Connections = () => {
   const [filteredUsers, setFilteredUsers] = useState(users);
-  //const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
   //------------------------------------------------------------
 
@@ -93,7 +94,7 @@ const Connections = () => {
     <Container
       variant={"main"}
       as="main"
-      className="bg-gradient-to-tr from-60% via-primary/50 from-white dark:from-stone-950 dark:bg-gradient-to-tr dark:from-60% dark:via-primary/50"
+      className="bg-gradient-to-tr from-55% via-primary/50 from-white dark:from-stone-950 dark:bg-gradient-to-tr dark:from-55% dark:via-primary/50"
     >
       <Container variant={"firstSection"} className="flex flex-col py-10 gap-2">
         {/* Title */}
@@ -217,8 +218,18 @@ const Connections = () => {
         </div>
         <div className="flex flex-wrap gap-10 justify-center mt-10 ">
           {filteredUsers.map((user: UserCardScheme) => (
-            <UserCardList key={user.id} {...user} />
+            <UserCardList
+              key={user.id}
+              user={user}
+              onClick={() => setSelectedUser(user)}
+            />
           ))}
+          {selectedUser && (
+            <UserModal
+              user={selectedUser}
+              onClose={() => setSelectedUser(null)}
+            />
+          )}
         </div>
       </Container>
     </Container>
