@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "../atoms/select";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -41,16 +41,16 @@ const filterScheme = z.object({
   meetingPreference: z.string(),
 });
 
+import { useMemo } from "react";
+
 type filterScheme = z.infer<typeof filterScheme>;
 
-const Connections = () => {
-  const [filteredUsers, setFilteredUsers] = useState(users);
+const Connections2 = () => {
+  const [filteredUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(9);
-
-  //------------------------------------------------------------
 
   const [states, setStates] = useState<
     { id: number; sigla: string; nome: string }[]
@@ -81,8 +81,12 @@ const Connections = () => {
     })();
   }, [form.watch("uf")]);
 
-  const formValues = form.watch();
-  useEffect(() => {
+  const formValues = useWatch({
+    control: form.control,
+  });
+
+  // Memoize filtered results
+  const currentUsers = useMemo(() => {
     const filtered = users.filter((user: UserCardScheme) => {
       const type =
         formValues.type === "" ||
@@ -95,15 +99,15 @@ const Connections = () => {
       const uf =
         formValues.uf === "" || user.uf === formValues.uf.toUpperCase();
       const town = formValues.town === "" || user.town === formValues.town;
+
       return type && meetingPreference && uf && town;
     });
 
-    setFilteredUsers(filtered);
-  }, [formValues]);
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    return filtered.slice(indexOfFirstUser, indexOfLastUser);
+  }, [formValues, currentPage, usersPerPage]);
 
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   return (
@@ -119,7 +123,6 @@ const Connections = () => {
           <Heart className="inline fill-primary border-primary" size={60} />
         </Typography>
         <div className=" flex w-full flex-row ">
-          {/* TODO: It's good put the form in the component later */}
           <Form {...form}>
             <form className="flex flex-col gap-2 w-full md:flex-row">
               <FormField
@@ -288,4 +291,9 @@ const Connections = () => {
   );
 };
 
-export default Connections;
+/* const Connections = () => {
+  return <div>sdfsdfds</div>;
+};
+
+export default Connections; */
+export default Connections2;
