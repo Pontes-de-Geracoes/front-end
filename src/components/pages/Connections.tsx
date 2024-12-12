@@ -25,6 +25,14 @@ import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Button } from "../atoms/button";
 import UserCardList from "../molecules/userCard/userCardList";
 import { UserModal } from "../molecules/userCard/user-modal";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../atoms/pagination";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -38,6 +46,9 @@ type filterScheme = z.infer<typeof filterScheme>;
 const Connections = () => {
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(9);
 
   //------------------------------------------------------------
 
@@ -89,6 +100,11 @@ const Connections = () => {
 
     setFilteredUsers(filtered);
   }, [formValues]);
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   return (
     <Container
@@ -217,13 +233,49 @@ const Connections = () => {
           </Form>
         </div>
         <div className="flex flex-wrap gap-10 justify-center mt-10 ">
-          {filteredUsers.map((user: UserCardScheme) => (
+          {currentUsers.map((user: UserCardScheme) => (
             <UserCardList
               key={user.id}
               user={user}
               onClick={() => setSelectedUser(user)}
             />
           ))}
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                  }}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(i + 1);
+                    }}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
           {selectedUser && (
             <UserModal
               user={selectedUser}
