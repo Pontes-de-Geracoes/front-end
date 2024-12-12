@@ -4,19 +4,7 @@ export const routes = [
     href: "/",
   },
   {
-    name: "Services",
-    href: "#",
-  },
-  {
-    name: "Products",
-    href: "#",
-  },
-  {
-    name: "About",
-    href: "#",
-  },
-  {
-    name: "Contact",
-    href: "#",
+    name: "Find Connections",
+    href: "/connections",
   },
 ];
