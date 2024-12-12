@@ -26,8 +26,8 @@ const useTiltEffect = () => {
       const y = e.clientY - box.top;
       const centerX = box.width / 2;
       const centerY = box.height / 2;
-      const rotateX = (y - centerY) / 7;
-      const rotateY = (centerX - x) / 7;
+      const rotateY = (y - centerY) / 7;
+      const rotateX = (centerX - x) / 7;
 
       setRotate({ x: rotateX, y: rotateY });
     }, 100),
