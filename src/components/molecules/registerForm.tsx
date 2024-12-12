@@ -33,17 +33,6 @@ import {
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 
-type states = {
-  id: number;
-  sigla: string;
-  nome: string;
-  regiao: {
-    id: number;
-    sigla: string;
-    nome: string;
-  };
-};
-
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [states, setStates] = useState<
