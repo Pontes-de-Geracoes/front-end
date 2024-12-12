@@ -5,6 +5,7 @@ export const registerSchema = userScheme
   .omit({
     id: true,
     photo: true,
+    bio: true,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não são iguais.",
