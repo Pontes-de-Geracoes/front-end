@@ -1,49 +1,43 @@
 // src/mocks/fake-meetings.ts
 import { faker } from "@faker-js/faker";
 import { users } from "./fake-users";
+import { MeetingCardScheme } from "../schemes/meeting/meeting-card.scheme";
 
-export interface Meeting {
-  id: number;
-  name: string;
-  status: "pendent" | "confirm" | "cancel";
-  sender: (typeof users)[0];
-  recipient: (typeof users)[0];
-  message: string;
-  type: "presential" | "remote" | "both";
-  dateRange: Date;
-}
+export const meetings: MeetingCardScheme[] = Array.from(
+  { length: 20 },
+  (_, i) => {
+    const fromDate = faker.date.future();
 
-/* export const meetings: Meeting[] = Array.from({ length: 20 }, (_, i) => {
-  const fromDate = faker.date.future();
+    return {
+      id: i + 1,
+      name: faker.helpers.arrayElement([
+        "Coffee Chat",
+        "Reading Session",
+        "Walking Company",
+        "Board Games",
+        "Gardening Time",
+        "Music Session",
+        "Story Telling",
+        "Cooking Class",
+        "Tech Support",
+        "Arts & Crafts",
+      ]),
+      type: faker.helpers.arrayElement(["presential", "remote", "both"]),
+      status: faker.helpers.arrayElement(["pendent", "confirm", "cancel"]),
+      sender: faker.helpers.arrayElement(
+        users.filter((u) => u.type === "volunteer")
+      ),
+      recipient: faker.helpers.arrayElement(
+        users.filter((u) => u.type === "elderly")
+      ),
+      message: faker.lorem.paragraph(),
+      description: faker.lorem.sentence(10),
+      date: fromDate,
+    };
+  }
+);
 
-  return {
-    id: i + 1,
-    name: faker.helpers.arrayElement([
-      "Coffee Chat",
-      "Reading Session",
-      "Walking Company",
-      "Board Games",
-      "Gardening Time",
-      "Music Session",
-      "Story Telling",
-      "Cooking Class",
-      "Tech Support",
-      "Arts & Crafts",
-    ]),
-    type: faker.helpers.arrayElement(["presential", "remote", "both"]),
-    status: faker.helpers.arrayElement(["pendent", "confirm", "cancel"]),
-    sender: faker.helpers.arrayElement(
-      users.filter((u) => u.type === "volunteer")
-    ),
-    recipient: faker.helpers.arrayElement(
-      users.filter((u) => u.type === "elderly")
-    ),
-    message: faker.lorem.paragraph(),
-    dateRange: fromDate,
-  };
-}); */
-
-export const meetings: Meeting[] = [
+/* export const meetings: Meeting[] = [
   {
     id: 102,
     name: "Caminhada",
@@ -75,3 +69,4 @@ export const meetings: Meeting[] = [
     },
   },
 ];
+ */

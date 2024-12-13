@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { Meeting } from "../../../mocks/fake-meetings";
 import { Avatar, AvatarFallback, AvatarImage } from "../../atoms/avatar";
 import { Badge } from "../../atoms/badge";
 import { Button } from "../../atoms/button";
@@ -19,7 +18,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../../atoms/form";
-import { Select } from "../../atoms/select";
 import { Typography } from "../../atoms/typography";
 import {
   meetingScheme,
@@ -41,9 +39,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../atoms/alert-dialog";
+import { MeetingCardScheme } from "../../../schemes/meeting/meeting-card.scheme";
 
 type MeetingModalProps = Readonly<{
-  meeting?: Meeting;
+  meeting?: MeetingCardScheme;
   onClose: () => void;
 }>;
 
@@ -52,7 +51,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   const form = useForm<MeetingScheme>({
     resolver: zodResolver(meetingScheme),
     defaultValues: {
-      date: meeting?.dateRange,
+      date: meeting?.date,
       type: meeting?.type,
       status: meeting?.status,
       message: "",
@@ -118,7 +117,9 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                   </Typography>
                 </div>
               </div>
-              <Typography>{meeting.message}</Typography>
+              <Typography variant={"blockquote"} className="font-medium py-14 ">
+                {meeting.message}
+              </Typography>
             </DialogTitle>
           </DialogHeader>
 
@@ -130,7 +131,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
               <div className="text-right">
                 <Typography variant={"h4"}>Data</Typography>
                 <Typography variant={"small"} className="text-gray-500">
-                  {meeting.dateRange.toDateString()}
+                  {meeting.date.toDateString()}
                 </Typography>
               </div>
             </div>
