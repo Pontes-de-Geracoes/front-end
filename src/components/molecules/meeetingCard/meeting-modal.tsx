@@ -78,7 +78,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   return (
     meeting && (
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] rounded-3xl text-center">
+        <DialogContent className="sm:max-w-[425px] h-[95%] overflow-y-scroll overflow-x-hidden rounded-3xl text-center">
           <DialogHeader className="flex flex-col items-center relative">
             <div className="absolute -top-2 -left-3 flex mb-3 gap-2">
               <Badge className="">
@@ -147,7 +147,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                       render={({ field }) => (
                         <FormItem className="py-4">
                           <FormLabel>
-                            Envier uma mensagem com seu contato para{" "}
+                            Enviar uma mensagem com seu contato para{" "}
                             {meeting.sender.username} para prosseguírem com o
                             encontro.
                           </FormLabel>
