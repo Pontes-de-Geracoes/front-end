@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader } from "../../atoms/card";
 import { Typography } from "../../atoms/typography";
 import useTiltEffect from "../../../hooks/use-tilt-effect";
 
-type UserCardListProps = Readonly<{
+type UserCardProps = Readonly<{
   user: UserCardScheme;
   onClick: () => void;
 }>;
 
-const UserCardList = ({ user, onClick }: UserCardListProps) => {
+const UserCard = ({ user, onClick }: UserCardProps) => {
   const { onMouseLeave, onMouseMove, rotate } = useTiltEffect();
   return (
     <Card
@@ -42,4 +42,4 @@ const UserCardList = ({ user, onClick }: UserCardListProps) => {
   );
 };
 
-export default UserCardList;
+export default UserCard;

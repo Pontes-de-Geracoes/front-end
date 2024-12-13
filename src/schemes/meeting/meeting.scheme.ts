@@ -6,6 +6,8 @@ export const meetingScheme = z.object({
     required_error: "A date of birth is required.",
   }),
   message: z.string(),
+  /* After remove this option */
+  status: z.enum(["pendent", "confirm", "cancel"]).optional(),
 });
 
 export type MeetingScheme = z.infer<typeof meetingScheme>;
