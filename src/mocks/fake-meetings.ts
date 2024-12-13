@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { users } from "./fake-users";
 import { MeetingCardScheme } from "../schemes/meeting/meeting-card.scheme";
 
-export const meetings: MeetingCardScheme[] = Array.from(
+/* export const meetings: MeetingCardScheme[] = Array.from(
   { length: 20 },
   (_, i) => {
     const fromDate = faker.date.future();
@@ -35,15 +35,16 @@ export const meetings: MeetingCardScheme[] = Array.from(
       date: fromDate,
     };
   }
-);
+); */
 
-/* export const meetings: Meeting[] = [
+export const meetings: MeetingCardScheme[] = [
   {
     id: 102,
     name: "Caminhada",
-    dateRange: new Date(),
+    date: new Date(),
+    description: "Fazer uma caminhar",
     status: "pendent",
-    message: "Vamos caminhar",
+    message: "Vamos caminhar na São paulo",
     type: "presential",
     sender: {
       id: 1,
@@ -69,4 +70,3 @@ export const meetings: MeetingCardScheme[] = Array.from(
     },
   },
 ];
- */
