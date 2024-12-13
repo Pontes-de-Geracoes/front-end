@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -58,6 +59,7 @@
     --chart-5: 340 75% 55%;
   }
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -65,4 +67,21 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*Configuracoes da barra de rolagem*/
+/* largura */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #88888894;
+  border-radius: 5px;
+}
+
+/* Handle ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #727272;
 }
