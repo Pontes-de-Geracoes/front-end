@@ -69,7 +69,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
   return (
     user && (
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] rounded-3xl text-center">
+        <DialogContent className="sm:max-w-[425px] h-[95%] overflow-y-scroll overflow-x-hidden rounded-3xl text-center">
           <DialogHeader className="flex flex-col items-center relative">
             <div className="absolute -top-2 -left-3 flex  gap-2">
               <Badge className="">

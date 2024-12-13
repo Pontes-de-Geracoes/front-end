@@ -282,7 +282,7 @@ const Connections = () => {
             </PaginationContent>
           </Pagination>
           {selectedUser && (
-            <UserModal
+            <UserModal 
               user={selectedUser}
               onClose={() => setSelectedUser(null)}
             />
