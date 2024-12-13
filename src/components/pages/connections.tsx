@@ -2,7 +2,7 @@ import { Heart } from "lucide-react";
 import Container from "../atoms/container";
 import { Typography } from "../atoms/typography";
 import { UserCardScheme } from "../../schemes/user/userCard.schema";
-import { users } from "../../utils/fake-users";
+import { users } from "../../mocks/fake-users";
 import {
   Select,
   SelectContent,
@@ -23,7 +23,7 @@ import {
 } from "../atoms/form";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Button } from "../atoms/button";
-import UserCardList from "../molecules/userCard/userCardList";
+import UserCard from "../molecules/userCard/user-card";
 import { UserModal } from "../molecules/userCard/user-modal";
 import {
   Pagination,
@@ -45,7 +45,7 @@ import { useMemo } from "react";
 
 type filterScheme = z.infer<typeof filterScheme>;
 
-const Connections2 = () => {
+const Connections = () => {
   const [filteredUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
@@ -97,7 +97,7 @@ const Connections2 = () => {
         formValues.meetingPreference === "all" ||
         user.meetingPreference === formValues.meetingPreference;
       const uf =
-        formValues.uf === "" || user.uf === formValues.uf.toUpperCase();
+        formValues.uf === "" || user.uf === formValues.uf?.toUpperCase();
       const town = formValues.town === "" || user.town === formValues.town;
 
       return type && meetingPreference && uf && town;
@@ -231,13 +231,15 @@ const Connections2 = () => {
                   </FormItem>
                 )}
               />
-              <Button onClick={() => form.reset()}>Resetar filtros</Button>
+              <Button onClick={() => form.reset()} type="button">
+                Resetar filtros
+              </Button>
             </form>
           </Form>
         </div>
         <div className="flex flex-wrap gap-10 justify-center mt-10 ">
           {currentUsers.map((user: UserCardScheme) => (
-            <UserCardList
+            <UserCard
               key={user.id}
               user={user}
               onClick={() => setSelectedUser(user)}
@@ -291,9 +293,4 @@ const Connections2 = () => {
   );
 };
 
-/* const Connections = () => {
-  return <div>sdfsdfds</div>;
-};
-
-export default Connections; */
-export default Connections2;
+export default Connections;

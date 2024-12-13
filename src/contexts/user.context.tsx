@@ -43,7 +43,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   async function checkingToken() {
     //setIsLoading(true);

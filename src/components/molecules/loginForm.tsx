@@ -17,7 +17,6 @@ import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
-import Anchor from "../atoms/anchor";
 import { Link } from "react-router";
 
 const LoginForm = () => {

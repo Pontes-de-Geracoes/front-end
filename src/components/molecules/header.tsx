@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 import { routes } from "../../utils/route";
 import Anchor from "../atoms/anchor";
 import { Button } from "../atoms/button";
@@ -65,10 +65,10 @@ const Header = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to={"/profile"} className="flex gap-3">
+                <DropdownMenuItem asChild>
+                  <NavLink to={"/profile"} className="flex gap-3">
                     <User /> Profile
-                  </Link>
+                  </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -81,10 +81,10 @@ const Header = () => {
           ) : (
             <div className="flex gap-3">
               <Button>
-                <Link to={"/login"}>Login</Link>
+                <NavLink to={"/login"}>Login</NavLink>
               </Button>
               <Button variant={"outline"}>
-                <Link to={"/register"}>Criar conta</Link>
+                <NavLink to={"/register"}>Criar conta</NavLink>
               </Button>
             </div>
           )}
