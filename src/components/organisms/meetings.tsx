@@ -96,8 +96,6 @@ const Meetings = () => {
       currentPage * itemsPerPage
     );
 
-    console.log(paginatedMeetings);
-
     return { paginatedMeetings, totalPages };
   }, [name, status, date, friendName, currentPage]);
 
