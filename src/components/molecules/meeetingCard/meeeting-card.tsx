@@ -1,11 +1,11 @@
 import { format } from "date-fns";
-import { Meeting } from "../../../mocks/fake-meetings";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/user.context";
 import { Card } from "../../atoms/card";
+import { MeetingCardScheme } from "../../../schemes/meeting/meeting-card.scheme";
 
 interface MeetingCardProps {
-  meeting: Meeting;
+  meeting: MeetingCardScheme;
   onClick: () => void;
 }
 
@@ -43,9 +43,7 @@ const MeetingCard = ({ meeting, onClick }: MeetingCardProps) => {
           : meeting.sender.username}
       </p>
       <p className="text-sm">{meeting.message}</p>
-      <div className="text-sm text-gray-500">
-        {format(meeting.dateRange, "PPP")}
-      </div>
+      <div className="text-sm text-gray-500">{format(meeting.date, "PPP")}</div>
     </Card>
   );
 };

@@ -39,20 +39,30 @@ type UserModalProps = Readonly<{
 
 import { format } from "date-fns";
 import { toast } from "../../../hooks/use-toast";
+
+import { Input } from "../../atoms/input";
 import {
-  meetingScheme,
-  MeetingScheme,
-} from "../../../schemes/meeting/meeting.scheme";
+  meetingCreateScheme,
+  MeetingCreateScheme,
+} from "../../../schemes/meeting/meeting-create.scheme";
+import { useContext } from "react";
+import { UserContext } from "../../../contexts/user.context";
 
 export function UserModal({ user, onClose }: UserModalProps) {
-  const form = useForm<MeetingScheme>({
-    resolver: zodResolver(meetingScheme),
+  const { user: userInfo } = useContext(UserContext);
+  const form = useForm<MeetingCreateScheme>({
+    resolver: zodResolver(meetingCreateScheme),
     defaultValues: {
+      name: "",
+      description: "",
       message: "",
+      status: "pendent",
+      sender: userInfo,
+      recipient: user,
     },
   });
 
-  const onSubmit = (values: MeetingScheme) => {
+  const onSubmit = (values: MeetingCreateScheme) => {
     console.log(values);
 
     toast({
@@ -144,6 +154,40 @@ export function UserModal({ user, onClose }: UserModalProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className="text-left w-full space-y-4"
             >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Dê um titulo para esse encontro"
+                        type="text"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Descrição do encontro"
+                        type="text"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="type"
