@@ -12,7 +12,7 @@ import {
 } from "@/components/atoms/form";
 import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
-import { LoaderCircle } from "lucide-react";
+import { Badge, LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Typography } from "../atoms/typography";
 import {
@@ -38,6 +38,7 @@ const RegisterForm = () => {
     { id: number; sigla: string; nome: string }[]
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
+  const [selectedNecessities, setSelectedNecessities] = useState<String[]>(["Caminhar", "Tecnologia"]);
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -62,6 +63,11 @@ const RegisterForm = () => {
       setCities(cities);
     })();
   }, [form.watch("uf")]);
+
+  const handleNecessitySelection = (necessity : string) => {
+    console.log("A necessidade selecionada foi: " + necessity);
+    setSelectedNecessities([...selectedNecessities, necessity]);
+  }
 
   function onSubmit(values: RegisterSchema) {
     setLoading(true);
@@ -280,6 +286,41 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
+
+        <FormField
+            control={form.control}
+            name="necessities"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Necessidades</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Quais são suas necessidades?" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {states.map((state) => (
+                      <SelectItem key={state.id} value={state.sigla} onClick={() => handleNecessitySelection(state.nome)}>
+                        {state.nome} 
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid-cols-3 gap-4">
+            {selectedNecessities.map((necessity) => (
+              <div className="bg-primary/80 w-[150px] p-1 m-1 text-center rounded-xl">
+                {necessity}
+              </div>
+            ))}
+          </div>
 
         <Button type="submit" className="w-full">
           {loading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
