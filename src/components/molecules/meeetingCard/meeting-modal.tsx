@@ -51,10 +51,15 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   const form = useForm<MeetingScheme>({
     resolver: zodResolver(meetingScheme),
     defaultValues: {
+      id:meeting?.id,
+      name:meeting?.name,
       date: meeting?.date,
       type: meeting?.type,
+      description: meeting?.description,
       status: meeting?.status,
       message: "",
+      sender:meeting?.sender,
+      recipient:meeting?.recipient
     },
   });
 

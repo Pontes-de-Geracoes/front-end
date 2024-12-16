@@ -13,7 +13,9 @@ export const meetingScheme = z.object({
   date: z.date({
     required_error: "A data é obrigatória",
   }),
-  message: z.string(),
+  message: z.string().min(1, {
+    message: "A mensagem não deve ser nula",
+  }),
   status: z.enum(["pendent", "confirm", "cancel"]),
   sender: userCardScheme,
   recipient: userCardScheme,
