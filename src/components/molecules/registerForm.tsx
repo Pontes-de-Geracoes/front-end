@@ -315,8 +315,8 @@ const RegisterForm = () => {
           />
 
           <div className="grid-cols-3 gap-4">
-            {selectedNecessities.map((necessity) => (
-              <div className="bg-primary/80 w-[150px] p-1 m-1 text-center rounded-xl">
+            {selectedNecessities.map((necessity, id) => (
+              <div key={id} className="bg-primary/80 w-[150px] p-1 m-1 text-center rounded-xl">
                 {necessity}
               </div>
             ))}
