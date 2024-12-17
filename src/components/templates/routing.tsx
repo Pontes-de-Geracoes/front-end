@@ -6,6 +6,8 @@ import Register from "../pages/register";
 import Context from "../../contexts/context";
 import Connections from "../pages/connections";
 import Profile from "../pages/profile";
+import LoggedOnly from "./logged-only";
+import ServerError from "../pages/erros/ServerError";
 
 const Routing = () => {
   return (
@@ -17,7 +19,10 @@ const Routing = () => {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="connections" element={<Connections />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="/" element={<LoggedOnly />}>
+              <Route path="profile" element={<Profile />} />
+            </Route>
+            <Route path="/500" element={<ServerError />} />
           </Route>
         </Routes>
       </Context>
