@@ -1,3 +1,4 @@
+import { NavLink } from "react-router";
 import { Button } from "../atoms/button";
 import Container from "../atoms/container";
 import { Typography } from "../atoms/typography";
@@ -19,8 +20,12 @@ const Hero = () => {
           significativos.
         </Typography>
         <div className="flex gap-3">
-          <Button>Quero ajudar</Button>
-          <Button variant={"secondary"}>Quero ser ajudado</Button>
+          <NavLink to="/connections">
+            <Button>Quero ajudar</Button>
+          </NavLink>
+          <NavLink to="/connections">
+            <Button variant={"secondary"}>Quero ser ajudado</Button>
+          </NavLink>
         </div>
       </div>
       <img

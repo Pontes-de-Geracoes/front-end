@@ -43,7 +43,7 @@ const LoginForm = () => {
     const isLogged = await login(values);
 
     if (isLogged) {
-      toast({
+      /*  toast({
         title: "Encontro confirmado",
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -52,7 +52,7 @@ const LoginForm = () => {
             </code>
           </pre>
         ),
-      });
+      }); */
 
       setIsAuthenticated(true);
       update(isLogged);

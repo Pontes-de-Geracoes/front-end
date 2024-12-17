@@ -67,52 +67,18 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   }, [form.formState.errors]); */
 
   const onSubmit = async (values: MeetingUpdateScheme) => {
+    await meetingsServices.update(meeting?.id as number, values);
     if (values.status === "canceled") {
-      const updateMeeting = await meetingsServices.update(
-        meeting?.id as number,
-        values
-      );
-
       toast({
         title: "Encontro cancelado",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(updateMeeting, null, 2)}
-            </code>
-          </pre>
-        ),
       });
-      onClose();
-      return;
     }
 
     if (values.status === "confirm") {
-      const updateMeeting = await meetingsServices.update(
-        meeting?.id as number,
-        values
-      );
-
       toast({
         title: "Encontro confirmado",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(updateMeeting, null, 2)}
-            </code>
-          </pre>
-        ),
       });
     }
-
-    toast({
-      title: "Encontro confirmado",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
-    });
     onClose();
   };
 

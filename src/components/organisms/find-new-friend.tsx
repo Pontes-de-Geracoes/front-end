@@ -255,7 +255,7 @@ const FindNewFriend = () => {
                     <SelectItem value="in person">Presencial</SelectItem>
                     <SelectItem value="remote">Remoto</SelectItem>
                     <SelectItem value="hybrid">
-                      Ambos - (Presencial e Remoto)
+                      Híbrido - (Presencial e Remoto)
                     </SelectItem>
                     <SelectItem value="all">Todos</SelectItem>
                   </SelectContent>
@@ -278,48 +278,13 @@ const FindNewFriend = () => {
           />
         ))}
 
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => {
-                      if (currentPage > 1) {
-                        setCurrentPage((prev) => prev - 1);
-                      }
-                    }}
-                  />
-                </PaginationItem>
-
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(index + 1)}
-                      isActive={currentPage === index + 1}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
-        )}
         {selectedUser && isAuthenticated && (
           <UserModal
             user={selectedUser}
             onClose={() => setSelectedUser(null)}
           />
         )}
+
         {!isAuthenticated && selectedUser && (
           <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
             <DialogContent className="sm:max-w-[600px] h-[60%] text-black  rounded-3xl text-center">
@@ -430,6 +395,42 @@ const FindNewFriend = () => {
           </Dialog>
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      setCurrentPage((prev) => prev - 1);
+                    }
+                  }}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(index + 1)}
+                    isActive={currentPage === index + 1}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </>
   );
 };

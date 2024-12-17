@@ -1,4 +1,4 @@
-import Anchor from "../atoms/anchor";
+import { NavLink } from "react-router";
 import { Button } from "../atoms/button";
 import Container from "../atoms/container";
 import { Typography } from "../atoms/typography";
@@ -18,11 +18,11 @@ const CallToAction = () => {
           </Typography>
         </div>
         <div>
-          <Button>
-            <Anchor href="/volunteer">
+          <NavLink to="/register">
+            <Button>
               <Typography>Quero ser voluntário</Typography>
-            </Anchor>
-          </Button>
+            </Button>
+          </NavLink>
         </div>
       </div>
     </Container>
