@@ -109,6 +109,28 @@ const Meetings = () => {
     return { paginatedMeetings, totalPages };
   }, [meetings, name, status, date, friendName, currentPage]);
 
+  if (!meetings.length)
+    return (
+      <Container
+        as="section"
+        className="space-y-6 p-6 gap-6 rounded-2xl flex flex-col items-center justify-center"
+        variant="section"
+      >
+        <Typography
+          variant={"h1"}
+          as="h2"
+          className="text-right flex gap-6 justify-end"
+        >
+          <BookHeart size={48} />
+          Meus Encontros
+        </Typography>
+        <img src="/imgs/meeting-not-found.svg" className="max-w-[50%]" alt="" />
+        <Typography variant="h2" as="h2" className="text-center">
+          Você ainda não tem encontros marcados.
+        </Typography>
+      </Container>
+    );
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -169,8 +191,8 @@ const Meetings = () => {
                   <SelectContent>
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="pending">Pendente</SelectItem>
-                    <SelectItem value="confirmed">Confirmado</SelectItem>
-                    <SelectItem value="cancel">Cancelado</SelectItem>
+                    <SelectItem value="confirm">Confirmado</SelectItem>
+                    <SelectItem value="canceled">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

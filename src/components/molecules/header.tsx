@@ -1,6 +1,5 @@
 import { NavLink } from "react-router";
 import { routes } from "../../utils/route";
-import Anchor from "../atoms/anchor";
 import { Button } from "../atoms/button";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
@@ -33,9 +32,13 @@ const Header = () => {
         <nav className="hidden md:block">
           <ul className="flex gap-10">
             {routes.map((route) => (
-              <li key={route.name}>
-                <Anchor href={route.href}>{route.name}</Anchor>
-              </li>
+              <NavLink
+                key={route.name}
+                className="px-3 py-2 hover:underline-offset-4 hover:underline"
+                to={route.href}
+              >
+                <li>{route.name}</li>
+              </NavLink>
             ))}
           </ul>
         </nav>
@@ -67,7 +70,7 @@ const Header = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <NavLink to={"/profile"} className="flex gap-3">
-                    <User /> Profile
+                    <User /> Perfil
                   </NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

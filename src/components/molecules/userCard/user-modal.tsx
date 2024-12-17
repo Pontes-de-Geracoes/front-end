@@ -54,7 +54,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
   const form = useForm<MeetingCreateScheme>({
     resolver: zodResolver(meetingCreateScheme),
     defaultValues: {
-      name: "Caminhada",
+      name: "",
       description: "",
       message: "",
       status: "pending",
@@ -83,7 +83,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
       });
     }
 
-    toast({
+    /*   toast({
       title: "Encontro solicitado",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -92,6 +92,10 @@ export function UserModal({ user, onClose }: UserModalProps) {
           </code>
         </pre>
       ),
+    }); */
+
+    toast({
+      title: "Encontro solicitado com sucesso.",
     });
     onClose();
   };

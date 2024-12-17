@@ -1,10 +1,10 @@
 export const routes = [
   {
-    name: "Home",
+    name: "Sobre nós",
     href: "/",
   },
   {
-    name: "Find Connections",
+    name: "Conexões",
     href: "/connections",
   },
 ];

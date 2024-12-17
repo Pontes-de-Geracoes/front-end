@@ -5,20 +5,29 @@ import { validatingToken } from "../../services/auth/validedToken.service";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
 import { Typography } from "../atoms/typography";
+import { toast } from "../../hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const token = Cookies.get("token");
     async function checkingToken(token: string) {
-      if (await validatingToken(token)) navigate("/");
+      if (await validatingToken(token)) {
+        toast({
+          description: "Você já está logado",
+        });
+        navigate("/");
+      }
     }
     if (token) checkingToken(token);
   }, [navigate]);
   return (
     <Container variant={"main"} as="main">
-      <Container variant={"firstSection"}>
-        <Typography variant="h1" className="text-center w-full">
+      <Container
+        variant={"firstSection"}
+        className="flex flex-col items-center justify-center gap-4"
+      >
+        <Typography variant="h1" className="text-center w-full ">
           Bem-vindo de volta ⭐
         </Typography>
         <Container className="flex w-full flex-col md:flex-row items-center justify-evenly gap-10 max-w-[500px] md:max-w-full">
