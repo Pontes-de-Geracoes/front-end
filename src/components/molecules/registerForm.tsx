@@ -40,7 +40,7 @@ const RegisterForm = () => {
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
   const [selectedNecessities, setSelectedNecessities] = useState<string[]>([]);
-
+  
   const form = useForm<RegisterScheme>({
     resolver: zodResolver(registerScheme),
     defaultValues: {
@@ -50,6 +50,9 @@ const RegisterForm = () => {
       confirmPassword: "",
     },
   });
+  
+  //this method listens to chenges in the type field and re-renders the component
+  const userType = form.watch("type");
 
   useEffect(() => {
     (async () => {
@@ -60,10 +63,10 @@ const RegisterForm = () => {
 
   useEffect(() => {
     (async () => {
-      const cities = await fetchCities(form.getValues("uf"));
+      const cities = await fetchCities(form.getValues("state"));
       setCities(cities);
     })();
-  }, [form.watch("uf")]);
+  }, [form.watch("state")]);
 
   const handleNecessitySelection = (necessity: string) => {
     setSelectedNecessities((prevNecessities) => [
@@ -79,7 +82,7 @@ const RegisterForm = () => {
     );
   };
 
-  function onSubmit(values: RegisterSchema) {
+  function onSubmit(values: RegisterScheme) {
     setLoading(true);
 
     // 3. Handle your form submission.
@@ -113,7 +116,7 @@ const RegisterForm = () => {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nome de usuário</FormLabel>
@@ -216,7 +219,7 @@ const RegisterForm = () => {
         <div className="flex flex-col md:flex-row gap-2">
           <FormField
             control={form.control}
-            name="uf"
+            name="state"
             render={({ field }) => (
               <FormItem className="w-full md:w-6/12">
                 <FormLabel>Estado</FormLabel>
@@ -253,7 +256,7 @@ const RegisterForm = () => {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger disabled={!form.watch("uf")}>
+                      <SelectTrigger disabled={!form.watch("state")}>
                         <SelectValue placeholder="Escolha a sua cidade" />
                       </SelectTrigger>
                     </FormControl>
@@ -297,39 +300,45 @@ const RegisterForm = () => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="necessities"
-          render={() => (
-            <FormItem className="w-full">
-              <FormLabel>Necessidades</FormLabel>
-              <Select
-                onValueChange={(value: string) => {
-                  const selectedNecessity = states.find(
-                    (state) => state.sigla === value
-                  );
-                  if (selectedNecessity) {
-                    handleNecessitySelection(selectedNecessity.nome);
-                  }
-                }}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Quais são suas necessidades?" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {states.map((state) => (
-                    <SelectItem key={state.id} value={state.sigla}>
-                      {state.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {userType && (
+          <FormField
+            control={form.control}
+            name="necessities"
+            render={() => (
+              <FormItem className="w-full">
+                <FormLabel>
+                  {form.getValues("type") === "elderly"
+                    ? "Quais são suas necessidades ?"
+                    : "Quais são suas habilidades ?"}
+                </FormLabel>
+                <Select
+                  onValueChange={(value: string) => {
+                    const selectedNecessity = states.find(
+                      (state) => state.sigla === value
+                    );
+                    if (selectedNecessity) {
+                      handleNecessitySelection(selectedNecessity.nome);
+                    }
+                  }}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Quais são suas necessidades?" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {states.map((state) => (
+                      <SelectItem key={state.id} value={state.sigla}>
+                        {state.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="">
           {selectedNecessities.map((necessity, id) => (
