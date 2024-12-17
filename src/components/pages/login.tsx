@@ -23,8 +23,11 @@ const Login = () => {
   }, [navigate]);
   return (
     <Container variant={"main"} as="main">
-      <Container variant={"firstSection"}>
-        <Typography variant="h1" className="text-center w-full">
+      <Container
+        variant={"firstSection"}
+        className="flex flex-col items-center justify-center gap-4"
+      >
+        <Typography variant="h1" className="text-center w-full ">
           Bem-vindo de volta ⭐
         </Typography>
         <Container className="flex w-full flex-col md:flex-row items-center justify-evenly gap-10 max-w-[500px] md:max-w-full">
