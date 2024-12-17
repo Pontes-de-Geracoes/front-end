@@ -12,7 +12,7 @@ import {
 } from "@/components/atoms/form";
 import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Typography } from "../atoms/typography";
 import {
@@ -31,6 +31,7 @@ import {
 } from "../atoms/select";
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
+import { Badge } from "../atoms/badge";
 
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ const RegisterForm = () => {
     { id: number; sigla: string; nome: string }[]
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
+  const [selectedNecessities, setSelectedNecessities] = useState<string[]>([]);
 
   const form = useForm<RegisterScheme>({
     resolver: zodResolver(registerScheme),
@@ -63,7 +65,21 @@ const RegisterForm = () => {
     })();
   }, [form.watch("uf")]);
 
-  function onSubmit(values: RegisterScheme) {
+  const handleNecessitySelection = (necessity: string) => {
+    setSelectedNecessities((prevNecessities) => [
+      ...prevNecessities,
+      necessity,
+    ]);
+  };
+
+  const handleNecessityRemoval = (necessity: string) => {
+    //filtering only the necessities that are different from the clicked one
+    setSelectedNecessities((prevNecessities) =>
+      prevNecessities.filter((item) => item !== necessity)
+    );
+  };
+
+  function onSubmit(values: RegisterSchema) {
     setLoading(true);
 
     // 3. Handle your form submission.
@@ -280,6 +296,53 @@ const RegisterForm = () => {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="necessities"
+          render={() => (
+            <FormItem className="w-full">
+              <FormLabel>Necessidades</FormLabel>
+              <Select
+                onValueChange={(value: string) => {
+                  const selectedNecessity = states.find(
+                    (state) => state.sigla === value
+                  );
+                  if (selectedNecessity) {
+                    handleNecessitySelection(selectedNecessity.nome);
+                  }
+                }}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Quais são suas necessidades?" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {states.map((state) => (
+                    <SelectItem key={state.id} value={state.sigla}>
+                      {state.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="">
+          {selectedNecessities.map((necessity, id) => (
+            <Badge
+              key={id}
+              className="bg-primary/80 m-1 cursor-pointer"
+              onClick={() => handleNecessityRemoval(necessity)}
+            >
+              {necessity}
+              <X size={15} className="m-1" />
+            </Badge>
+          ))}
+        </div>
 
         <Button type="submit" className="w-full">
           {loading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
