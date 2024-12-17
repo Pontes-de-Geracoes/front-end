@@ -48,8 +48,8 @@ const Header = () => {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={user.photo} alt={user.username} />
-                    <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={user.photo} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -57,7 +57,7 @@ const Header = () => {
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user.username}
+                      {user.name}
                     </p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}

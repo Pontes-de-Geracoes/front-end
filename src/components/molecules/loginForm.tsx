@@ -14,45 +14,57 @@ import {
 import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { login } from "../../services/auth/login.service";
+import { UserContext, UserContextSchema } from "../../contexts/user.context";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { setIsAuthenticated, update } = useContext(
+    UserContext
+  ) as UserContextSchema;
 
   // 1. Define your form.
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "maria@email.com",
+      password: "password123",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: LoginSchema) {
+  async function onSubmit(values: LoginSchema) {
     setLoading(true);
 
-    // 3. Handle your form submission.
-    //const confirmedUser = await login(values);
+    const isLogged = await login(values);
 
-    // 4. Handle the response.
-    /* if (confirmedUser) {
-     
-      / set/update authentication token
-      /update
+    if (isLogged) {
+      toast({
+        title: "Encontro confirmado",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(isLogged, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
 
-     return router.push("/"); 
-    } */
-
-    // 5. Handle the error.
-    toast({
-      title: "Email ou senha incorretos",
-      description: "Problema no servido.",
-      variant: "destructive",
-    });
+      setIsAuthenticated(true);
+      update(isLogged);
+      return navigate("/");
+    } else {
+      toast({
+        title: "Erro",
+        description: "Usuário ou senha inválidos",
+        variant: "destructive",
+      });
+    }
 
     setLoading(false);
     console.log(values);

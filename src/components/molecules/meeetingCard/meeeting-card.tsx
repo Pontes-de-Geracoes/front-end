@@ -24,12 +24,12 @@ const MeetingCard = ({ meeting, onClick }: MeetingCardProps) => {
           className={`px-2 py-1 rounded-full text-sm ${
             meeting.status === "confirm"
               ? "bg-green-100 text-green-800"
-              : meeting.status === "cancel"
+              : meeting.status === "canceled"
               ? "bg-red-100 text-red-800"
               : "bg-yellow-100 text-yellow-800"
           }`}
         >
-          {meeting.status == "cancel"
+          {meeting.status == "canceled"
             ? "Cancelado"
             : meeting.status == "confirm"
             ? "Confirmado"
@@ -38,11 +38,11 @@ const MeetingCard = ({ meeting, onClick }: MeetingCardProps) => {
       </div>
       <p className="text-sm text-gray-600">
         With:{" "}
-        {meeting.sender.id === user?.id
-          ? meeting.recipient.username
-          : meeting.sender.username}
+        {meeting.sender?.id === user?.id
+          ? meeting.recipient.name
+          : meeting.sender.name}
       </p>
-      <p className="text-sm">{meeting.message}</p>
+      <p className="text-sm">{meeting.description}</p>
       <div className="text-sm text-gray-500">{format(meeting.date, "PPP")}</div>
     </Card>
   );

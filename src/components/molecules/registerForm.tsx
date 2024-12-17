@@ -16,8 +16,8 @@ import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Typography } from "../atoms/typography";
 import {
-  registerSchema,
-  RegisterSchema,
+  registerScheme,
+  RegisterScheme,
 } from "../../schemes/user/register.schema";
 import { Link } from "react-router";
 import { RadioGroup, RadioGroupItem } from "../atoms/radio-group";
@@ -39,10 +39,10 @@ const RegisterForm = () => {
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
 
-  const form = useForm<RegisterSchema>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<RegisterScheme>({
+    resolver: zodResolver(registerScheme),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -63,7 +63,7 @@ const RegisterForm = () => {
     })();
   }, [form.watch("uf")]);
 
-  function onSubmit(values: RegisterSchema) {
+  function onSubmit(values: RegisterScheme) {
     setLoading(true);
 
     // 3. Handle your form submission.

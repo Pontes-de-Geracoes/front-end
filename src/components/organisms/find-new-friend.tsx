@@ -1,5 +1,5 @@
 import { UserCardScheme } from "../../schemes/user/userCard.schema";
-import { users } from "../../mocks/fake-users";
+//import { users } from "../../mocks/fake-users";
 import {
   Select,
   SelectContent,
@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../atoms/select";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,18 +30,36 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../atoms/pagination";
+import { usersServices } from "../../services/users.services";
+import { UserContext } from "../../contexts/user.context";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../atoms/dialog";
+import { AlertDialogHeader } from "../atoms/alert-dialog";
+import { Badge } from "../atoms/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../atoms/avatar";
+import { Typography } from "../atoms/typography";
+import Anchor from "../atoms/anchor";
+import { NavLink } from "react-router";
 
 const filterScheme = z.object({
   type: z.string(),
   uf: z.string(),
   town: z.string(),
-  meetingPreference: z.string(),
+  meetingPreference: z.enum(["in person", "remote", "hybrid", "all", ""]),
 });
 
 type filterScheme = z.infer<typeof filterScheme>;
 
 const FindNewFriend = () => {
+  const { user: userInfo, isAuthenticated } = useContext(UserContext);
+
   /* Users states */
+  const [users, setUsers] = useState<UserCardScheme[]>([] as UserCardScheme[]);
   const [filteredUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
@@ -79,6 +97,20 @@ const FindNewFriend = () => {
     })();
   }, [form.watch("uf")]);
 
+  useEffect(() => {
+    (async () => {
+      const usersFetch = await usersServices.getAll();
+      if (userInfo.id) {
+        const usersFilted = usersFetch.filter(
+          (user) => user.id !== userInfo.id
+        );
+        setUsers(usersFilted);
+      } else {
+        setUsers(usersFetch);
+      }
+    })();
+  }, [userInfo.id]);
+
   const formValues = useWatch({
     control: form.control,
   });
@@ -95,7 +127,7 @@ const FindNewFriend = () => {
         formValues.meetingPreference === "all" ||
         user.meetingPreference === formValues.meetingPreference;
       const uf =
-        formValues.uf === "" || user.uf === formValues.uf?.toUpperCase();
+        formValues.uf === "" || user.state === formValues.uf?.toUpperCase();
       const town = formValues.town === "" || user.town === formValues.town;
 
       return type && meetingPreference && uf && town;
@@ -104,7 +136,15 @@ const FindNewFriend = () => {
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     return filtered.slice(indexOfFirstUser, indexOfLastUser);
-  }, [formValues, currentPage, usersPerPage]);
+  }, [
+    users,
+    currentPage,
+    usersPerPage,
+    formValues.type,
+    formValues.meetingPreference,
+    formValues.uf,
+    formValues.town,
+  ]);
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   return (
@@ -205,11 +245,12 @@ const FindNewFriend = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="presential">Presencial</SelectItem>
+                    <SelectItem value="in person">Presencial</SelectItem>
                     <SelectItem value="remote">Remoto</SelectItem>
-                    <SelectItem value="all">
+                    <SelectItem value="hybrid">
                       Ambos - (Presencial e Remoto)
                     </SelectItem>
+                    <SelectItem value="all">Todos</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -229,47 +270,153 @@ const FindNewFriend = () => {
             onClick={() => setSelectedUser(user)}
           />
         ))}
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage((prev) => Math.max(prev - 1, 1));
-                }}
-              />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
+        {totalPages > 1 && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setCurrentPage(i + 1);
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
                   }}
-                  isActive={currentPage === i + 1}
-                >
-                  {i + 1}
-                </PaginationLink>
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-        {selectedUser && (
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(i + 1);
+                    }}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+        {selectedUser && isAuthenticated && (
           <UserModal
             user={selectedUser}
             onClose={() => setSelectedUser(null)}
           />
+        )}
+
+        {!isAuthenticated && selectedUser && (
+          <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
+            <DialogContent className="sm:max-w-[600px] h-[60%] text-black  rounded-3xl text-center">
+              <DialogHeader className="flex flex-col items-center relative">
+                <div className="absolute -top-2 -left-3 flex  gap-2">
+                  <Badge className="">
+                    {selectedUser?.type === "elderly" ? "Idoso" : "Voluntário"}
+                  </Badge>
+                  <Badge>
+                    {selectedUser?.meetingPreference === "in person"
+                      ? "Presencial"
+                      : selectedUser?.meetingPreference === "hybrid"
+                      ? "Híbrido"
+                      : "Remoto"}
+                  </Badge>
+                </div>
+                <Avatar className="w-32 h-32">
+                  <AvatarImage
+                    src={selectedUser?.photo}
+                    alt={selectedUser?.name}
+                  />
+                  <AvatarFallback>
+                    {selectedUser?.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <DialogTitle className="mt-4 text-center space-y-5">
+                  <div className="flex flex-col ">
+                    <Typography variant={"h3"}>{selectedUser?.name}</Typography>
+                    <Typography variant={"small"} className="text-gray-500">
+                      {selectedUser?.town} - {selectedUser?.state}
+                    </Typography>
+                  </div>
+                  <div className="relative flex overflow-x-hidden max-w-[370px]">
+                    {/* TODO: Edit this later for the selectedUser interest */}
+                    <div className="animate-marquee whitespace-nowrap space-x-2 ">
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                    </div>
+                    <div className="absolute top-0 animate-marquee2 whitespace-nowrap space-x-2 ">
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                      <Badge className="bg-primary/80">Caminhar</Badge>
+                      <Badge className="bg-primary/80">Cantar</Badge>
+                      <Badge className="bg-primary/80">Dançar</Badge>
+                      <Badge className="bg-primary/80">Tecnologia</Badge>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 py-4">
+                    <Typography className="text-sm text-gray-600">
+                      {selectedUser?.bio}
+                    </Typography>
+                  </div>
+                </DialogTitle>
+              </DialogHeader>
+              <div className="">
+                <Typography variant={"h3"}>
+                  Faça login para visualizar o perfil completo
+                </Typography>
+              </div>
+              <DialogFooter>
+                <div className="flex gap-4 w-full justify-center">
+                  <Button
+                    onClick={() => setSelectedUser(null)}
+                    className="w-full"
+                  >
+                    <NavLink to={"/login"}>Faça login</NavLink>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedUser(null)}
+                    className="w-full"
+                  >
+                    <NavLink to={"/register"}>Cadastrar</NavLink>
+                  </Button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </>

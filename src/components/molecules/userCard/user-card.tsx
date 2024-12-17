@@ -25,16 +25,16 @@ const UserCard = ({ user, onClick }: UserCardProps) => {
     >
       <CardHeader>
         <Avatar className="h-24 w-24">
-          <AvatarImage src={user.photo} alt={user.username} />
+          <AvatarImage src={user.photo} alt={user.name} />
           <AvatarFallback className="bg-primary/75">
-            {user.username.charAt(0)}
+            {user.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
       </CardHeader>
 
       <CardContent>
         <Typography variant={"h3"} as="h3">
-          {user.username}
+          {user.name}
         </Typography>
         <Typography>{user.bio}</Typography>
       </CardContent>

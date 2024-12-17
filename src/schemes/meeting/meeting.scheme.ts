@@ -9,14 +9,16 @@ export const meetingScheme = z.object({
   description: z.string().min(10, {
     message: "A descrição deve ter no mínimo 10 caracteres",
   }),
-  type: z.enum(["presential", "remote", "both"]),
+  type: z.enum(["in person", "remote", "hybrid"], {
+    message: "O tipo de reunião deve ser pessoalmente, remoto ou ambos",
+  }),
   date: z.date({
-    required_error: "A data é obrigatória",
+    message: "A data é obrigatória",
   }),
   message: z.string().min(1, {
     message: "A mensagem não deve ser nula",
   }),
-  status: z.enum(["pendent", "confirm", "cancel"]),
+  status: z.enum(["pending", "confirm", "canceled"]),
   sender: userCardScheme,
   recipient: userCardScheme,
 });

@@ -20,11 +20,9 @@ import {
 import { Input } from "../atoms/input";
 import { Button } from "../atoms/button";
 
-import { meetings } from "../../mocks/fake-meetings";
-
 import { BookHeart } from "lucide-react";
 
-import { useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 
 import {
   Pagination,
@@ -37,22 +35,34 @@ import {
 import MeetingCard from "../molecules/meeetingCard/meeeting-card";
 import MeetingModal from "../molecules/meeetingCard/meeting-modal";
 import { MeetingCardScheme } from "../../schemes/meeting/meeting-card.scheme";
+import { UserContext, UserContextSchema } from "../../contexts/user.context";
+import { meetingsServices } from "../../services/meetings.services";
 
 const profileMeetingsForm = z.object({
   name: z.string(),
   friendName: z.string(),
   sendByMe: z.boolean(),
   date: z.date(),
-  status: z.enum(["pendent", "confirm", "cancel", "all"]).optional(),
+  status: z.enum(["pending", "confirm", "canceled", "all"]).optional(),
 });
 
 type ProfileMeetingsForm = z.infer<typeof profileMeetingsForm>;
 const Meetings = () => {
+  const [meetings, setMeetings] = useState<MeetingCardScheme[]>([]);
+  const { user } = useContext(UserContext) as UserContextSchema;
+
   const [selectedMeeting, setSelectedMeeting] =
     useState<null | MeetingCardScheme>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    (async () => {
+      const fetchMeetings = await meetingsServices.getAllByUserID(user.id);
+      setMeetings(fetchMeetings);
+    })();
+  }, [user.id, selectedMeeting]);
 
   const form = useForm<ProfileMeetingsForm>({
     resolver: zodResolver(profileMeetingsForm),
@@ -75,10 +85,10 @@ const Meetings = () => {
           !name || meeting.name.toLowerCase().startsWith(name.toLowerCase());
         const matchesWith =
           !friendName ||
-          meeting.sender.username
+          meeting.sender.name
             .toLowerCase()
             .startsWith(friendName.toLowerCase()) ||
-          meeting.recipient.username
+          meeting.recipient.name
             .toLowerCase()
             .startsWith(friendName.toLowerCase());
         const matchesStatus =
@@ -91,13 +101,13 @@ const Meetings = () => {
     }
 
     const totalPages = Math.ceil(filtered.length / itemsPerPage);
-    const paginatedMeetings = filtered.slice(
+    const paginatedMeetings = filtered?.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     );
 
     return { paginatedMeetings, totalPages };
-  }, [name, status, date, friendName, currentPage]);
+  }, [meetings, name, status, date, friendName, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

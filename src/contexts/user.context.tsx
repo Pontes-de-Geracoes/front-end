@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
 import { validatingToken } from "../services/auth/validedToken.service";
 import { useNavigate } from "react-router";
+import { toast } from "../hooks/use-toast";
 
 export type UserContextSchema = {
   user: UserInfoScheme;
@@ -14,17 +15,18 @@ export type UserContextSchema = {
 };
 
 const emptyUser: UserInfoScheme = {
-  id: 0,
-  username: "Vítor Oliveira",
-  email: "caulicons@gmail.com",
+  id: 1,
+  name: "",
+  email: "",
   type: "elderly",
   photo:
     "https://www.petmag.com.br/app/uploads/petteca/famosos/8372/batatinha-01.jpg",
-  age: 22,
+  age: 0,
   meetingPreference: "remote",
-  uf: "SP",
-  town: "São Paulo",
-  bio: "I'm a software developer.",
+  state: "",
+  town: "",
+  bio: "",
+  meetings: [],
 };
 
 export const UserContext = React.createContext<UserContextSchema>({
@@ -36,10 +38,10 @@ export const UserContext = React.createContext<UserContextSchema>({
 });
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  /* useEffect(() => {
+  useEffect(() => {
     checkingToken();
   }, []);
- */
+
   const navigate = useNavigate();
   //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);
@@ -54,7 +56,6 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     else checkingToken(token);
 
     async function checkingToken(token: string) {
-      /* TODO: check if here is call two times */
       if (await validatingToken(token)) {
         const user = await validatingToken(token);
         if (!user) setIsAuthenticated(false);
@@ -65,6 +66,14 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
+    toast({
+      title: "Encontro confirmado",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(user, null, 2)}</code>
+        </pre>
+      ),
+    });
     //setIsLoading(false);
   }
 

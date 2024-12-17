@@ -1,7 +1,19 @@
+import { useNavigate } from "react-router";
 import Container from "../atoms/container";
 import RegisterForm from "../molecules/registerForm";
+import { useEffect } from "react";
+import { validatingToken } from "../../services/auth/validedToken.service";
+import Cookies from "js-cookie";
 
 const Register = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    async function checkingToken(token: string) {
+      if (await validatingToken(token)) navigate("/");
+    }
+    if (token) checkingToken(token);
+  }, [navigate]);
   return (
     <Container variant={"main"} as="main">
       <Container

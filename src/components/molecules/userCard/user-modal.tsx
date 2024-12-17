@@ -45,31 +45,51 @@ import {
   meetingCreateScheme,
   MeetingCreateScheme,
 } from "../../../schemes/meeting/meeting-create.scheme";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../../contexts/user.context";
+import { meetingsServices } from "../../../services/meetings.services";
 
 export function UserModal({ user, onClose }: UserModalProps) {
   const { user: userInfo } = useContext(UserContext);
   const form = useForm<MeetingCreateScheme>({
     resolver: zodResolver(meetingCreateScheme),
     defaultValues: {
-      name: "",
+      name: "Caminhada",
       description: "",
       message: "",
-      status: "pendent",
-      sender: userInfo,
-      recipient: user,
+      status: "pending",
+      sender: userInfo.id,
+      recipient: user?.id,
     },
   });
+  form.setValue("sender", userInfo.id);
+  form.setValue("recipient", user?.id as number);
 
-  const onSubmit = (values: MeetingCreateScheme) => {
+  /* I want check if has some error in the form if the form change with reack hook forms  */
+  useEffect(() => {
+    console.log(form.formState.errors);
+  }, [form.formState.errors]);
+
+  const onSubmit = async (values: MeetingCreateScheme) => {
     console.log(values);
+
+    const newMeeting = await meetingsServices.create(values);
+
+    if (!newMeeting) {
+      return toast({
+        title: "Erro ao solicitar encontro",
+        description: "Tente novamente mais tarde",
+        variant: "destructive",
+      });
+    }
 
     toast({
       title: "Encontro solicitado",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+          <code className="text-white">
+            {JSON.stringify(newMeeting, null, 2)}
+          </code>
         </pre>
       ),
     });
@@ -86,20 +106,22 @@ export function UserModal({ user, onClose }: UserModalProps) {
                 {user?.type === "elderly" ? "Idoso" : "Voluntário"}
               </Badge>
               <Badge>
-                {user?.meetingPreference === "presential"
+                {user?.meetingPreference === "in person"
                   ? "Presencial"
+                  : user?.meetingPreference === "hybrid"
+                  ? "Híbrido"
                   : "Remoto"}
               </Badge>
             </div>
             <Avatar className="w-32 h-32">
-              <AvatarImage src={user?.photo} alt={user?.username} />
-              <AvatarFallback>{user?.username.charAt(0)}</AvatarFallback>
+              <AvatarImage src={user?.photo} alt={user?.name} />
+              <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <DialogTitle className="mt-4 text-center space-y-5">
               <div className="flex flex-col ">
-                <Typography variant={"h3"}>{user?.username}</Typography>
+                <Typography variant={"h3"}>{user?.name}</Typography>
                 <Typography variant={"small"} className="text-gray-500">
-                  {user?.town} - {user?.uf}
+                  {user?.town} - {user?.state}
                 </Typography>
               </div>
               <div className="relative flex overflow-x-hidden max-w-[370px]">
@@ -204,12 +226,18 @@ export function UserModal({ user, onClose }: UserModalProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {user?.meetingPreference === "both" ? (
-                          <SelectItem value="both">Sem preferência</SelectItem>
-                        ) : user?.meetingPreference === "presential" ? (
-                          <SelectItem value="presential">Presencial</SelectItem>
-                        ) : (
+                        {user?.meetingPreference === "hybrid" ? (
+                          <SelectItem value="hybrid">
+                            Sem preferência
+                          </SelectItem>
+                        ) : user?.meetingPreference === "in person" ? (
+                          <SelectItem value="in person">Presencial</SelectItem>
+                        ) : user?.meetingPreference === "remote" ? (
                           <SelectItem value="remote">Remoto</SelectItem>
+                        ) : (
+                          <SelectItem value="hybrid">
+                            Sem preferências
+                          </SelectItem>
                         )}
                       </SelectContent>
                     </Select>

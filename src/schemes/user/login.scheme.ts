@@ -5,12 +5,12 @@ export const loginSchema = userScheme.omit({
   age: true,
   meetingPreference: true,
   town: true,
-  uf: true,
+  state: true,
   photo: true,
   type: true,
   confirmPassword: true,
   id: true,
-  username: true,
+  name: true,
   bio: true,
 });
 

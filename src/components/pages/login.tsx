@@ -1,7 +1,19 @@
+import { useEffect } from "react";
 import Container from "../atoms/container";
 import LoginForm from "../molecules/loginForm";
+import { validatingToken } from "../../services/auth/validedToken.service";
+import { useNavigate } from "react-router";
+import Cookies from "js-cookie";
 
 const Login = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    async function checkingToken(token: string) {
+      if (await validatingToken(token)) navigate("/");
+    }
+    if (token) checkingToken(token);
+  }, [navigate]);
   return (
     <Container variant={"main"} as="main">
       <Container

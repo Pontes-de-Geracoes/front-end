@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const userScheme = z.object({
   id: z.number(),
-  username: z.string().min(3, {
+  name: z.string().min(3, {
     message: "O nome é necessário e deve ter no mínimo 3 caracteres.",
   }),
   age: z.number().min(18, {
@@ -11,7 +11,8 @@ export const userScheme = z.object({
   photo: z
     .string()
     .trim()
-    .url("Invalid image format. The image must be a URL."),
+    //.url("Invalid image format. The image must be a URL.")
+    .optional(),
   email: z
     .string()
     .min(1, {
@@ -23,10 +24,10 @@ export const userScheme = z.object({
   type: z.enum(["elderly", "volunteer"], {
     message: "Por favor selecione um tipo de usuário.",
   }),
-  meetingPreference: z.enum(["presential", "remote", "both"], {
+  meetingPreference: z.enum(["in person", "remote", "hybrid"], {
     message: "Por favor selecione uma preferência de reunião.",
   }),
-  uf: z.string().min(1, {
+  state: z.string().min(1, {
     message: "Por favor selecione o seu estado.",
   }),
   town: z.string().min(1, {
@@ -39,15 +40,14 @@ export const userScheme = z.object({
     })
     .max(32, {
       message: "Sua senha deve ter no máximo 32 caracteres.",
-    })
-    .regex(
+    }),
+  /* .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/,
       {
         message:
           "Sua senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
       }
-    ),
-  confirmPassword: z.string(),
+    ) */ confirmPassword: z.string(),
   bio: z.string().max(500, {}).optional(),
 });
 

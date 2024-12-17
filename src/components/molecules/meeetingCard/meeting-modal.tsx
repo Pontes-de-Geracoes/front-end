@@ -19,10 +19,6 @@ import {
   FormMessage,
 } from "../../atoms/form";
 import { Typography } from "../../atoms/typography";
-import {
-  meetingScheme,
-  MeetingScheme,
-} from "../../../schemes/meeting/meeting.scheme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "../../../hooks/use-toast";
 import { useContext } from "react";
@@ -40,6 +36,12 @@ import {
   AlertDialogTrigger,
 } from "../../atoms/alert-dialog";
 import { MeetingCardScheme } from "../../../schemes/meeting/meeting-card.scheme";
+import { format, parseISO } from "date-fns";
+import { meetingsServices } from "../../../services/meetings.services";
+import {
+  meetingUpdateScheme,
+  MeetingUpdateScheme,
+} from "../../../schemes/meeting/meeting.-update.scheme";
 
 type MeetingModalProps = Readonly<{
   meeting?: MeetingCardScheme;
@@ -48,23 +50,60 @@ type MeetingModalProps = Readonly<{
 
 const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   const { user } = useContext(UserContext);
-  const form = useForm<MeetingScheme>({
-    resolver: zodResolver(meetingScheme),
+  const form = useForm<MeetingUpdateScheme>({
+    resolver: zodResolver(meetingUpdateScheme),
     defaultValues: {
-      id:meeting?.id,
-      name:meeting?.name,
+      name: meeting?.name,
       date: meeting?.date,
       type: meeting?.type,
       description: meeting?.description,
       status: meeting?.status,
       message: "",
-      sender:meeting?.sender,
-      recipient:meeting?.recipient
     },
   });
 
-  const onSubmit = (values: MeetingScheme) => {
-    console.log(values);
+  /*   useEffect(() => {
+    console.log(form.formState.errors);
+  }, [form.formState.errors]); */
+
+  const onSubmit = async (values: MeetingUpdateScheme) => {
+    if (values.status === "canceled") {
+      const updateMeeting = await meetingsServices.update(
+        meeting?.id as number,
+        values
+      );
+
+      toast({
+        title: "Encontro cancelado",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(updateMeeting, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+      onClose();
+      return;
+    }
+
+    if (values.status === "confirm") {
+      const updateMeeting = await meetingsServices.update(
+        meeting?.id as number,
+        values
+      );
+
+      toast({
+        title: "Encontro confirmado",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(updateMeeting, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+    }
 
     toast({
       title: "Encontro confirmado",
@@ -94,12 +133,12 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
            ${
              meeting.status === "confirm"
                ? "bg-green-100 text-green-800"
-               : meeting.status === "cancel"
+               : meeting.status === "canceled"
                ? "bg-red-100 text-red-800"
                : "bg-yellow-100 text-yellow-800"
            }`}
               >
-                {meeting.status == "cancel"
+                {meeting.status == "canceled"
                   ? "Cancelado"
                   : meeting.status == "confirm"
                   ? "Confirmado"
@@ -107,14 +146,14 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
               </Badge>
             </div>
             <Avatar className="w-32 h-32">
-              <AvatarImage src={who?.photo} alt={who?.username} />
-              <AvatarFallback>{who?.username.charAt(0)}</AvatarFallback>
+              <AvatarImage src={who?.photo} alt={who?.name} />
+              <AvatarFallback>{who?.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <DialogTitle className="mt-4 text-center space-y-5">
               <div className="flex flex-col ">
-                <Typography variant={"h3"}>{who?.username}</Typography>
+                <Typography variant={"h3"}>{who?.name}</Typography>
                 <Typography variant={"small"} className="text-gray-500">
-                  {who?.town} - {who?.uf}
+                  {who?.town} - {who?.state}
                 </Typography>
                 <div className="grid gap-4 py-4">
                   <Typography className="text-sm text-gray-600">
@@ -136,11 +175,11 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
               <div className="text-right">
                 <Typography variant={"h4"}>Data</Typography>
                 <Typography variant={"small"} className="text-gray-500">
-                  {meeting.date.toDateString()}
+                  {format(meeting.date, "PPP")}
                 </Typography>
               </div>
             </div>
-            {meeting.status === "pendent" &&
+            {meeting.status === "pending" &&
               (meeting.recipient.id === user?.id ? (
                 /* if is a meeting request to the user */
                 /*  It's nice make something cool when accept some meeting */
@@ -153,7 +192,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                         <FormItem className="py-4">
                           <FormLabel>
                             Enviar uma mensagem com seu contato para{" "}
-                            {meeting.sender.username} para prosseguírem com o
+                            {meeting.sender.name} para prosseguírem com o
                             encontro.
                           </FormLabel>
                           <FormControl>
@@ -181,7 +220,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               Essa ação não pode ser desfeita, e seu encontro
-                              com {who?.username} será cancelado.
+                              com {who?.name} será cancelado.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -191,9 +230,19 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                               onClick={() => {
                                 form.setValue(
                                   "message",
-                                  `Encontro cancelado por ${user?.username}, ID: ${user?.id}.`
+                                  `Encontro cancelado por ${user?.name}, ID: ${user?.id}.`
                                 );
-                                form.setValue("status", "cancel");
+                                console.log();
+                                form.setValue("status", "canceled");
+                                form.setValue(
+                                  "date",
+                                  parseISO(
+                                    meeting.date instanceof Date
+                                      ? meeting.date.toISOString()
+                                      : meeting.date
+                                  )
+                                );
+
                                 form.handleSubmit(onSubmit)();
                               }}
                             >
@@ -202,7 +251,24 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                      <Button type="submit">Confirmar</Button>
+                      <Button
+                        type="submit"
+                        onClick={() => {
+                          form.setValue(
+                            "date",
+                            parseISO(
+                              meeting.date instanceof Date
+                                ? meeting.date.toISOString()
+                                : meeting.date
+                            )
+                          );
+                          form.setValue("status", "confirm");
+
+                          form.handleSubmit(onSubmit)();
+                        }}
+                      >
+                        Confirmar
+                      </Button>
                     </div>
                   </form>
                 </Form>
@@ -210,7 +276,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                 <>
                   <Typography className="text">
                     Ansioso para o encontro ? Aguarde só mais um pouco que{" "}
-                    {who?.username} vai confirmar com toda certeza.
+                    {who?.name} vai confirmar com toda certeza.
                   </Typography>
                   <Button onClick={onClose}>fechar</Button>
                 </>
@@ -218,24 +284,23 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
             {meeting.status === "confirm" && (
               <div className="flex flex-col gap-2">
                 <Typography>
-                  {who?.username} confirmou o encontro, não esqueça de
-                  comparecer. Segue mais informações sobre o encontro abaixo:
+                  {who?.name} confirmou o encontro, não esqueça de comparecer.
+                  Segue mais informações sobre o encontro abaixo:
                 </Typography>
                 <Typography>{meeting.message}</Typography>
                 <Button onClick={onClose}>Fechar</Button>
               </div>
             )}
-            {meeting.status === "cancel" && (
+            {meeting.status === "canceled" && (
               <>
                 <Typography className="text-center">
-                  Infelizmente {who?.username} cancelou o encontro, todo mundo
-                  tem seus dias talvez em outro momento.
+                  Infelizmente {who?.name} cancelou o encontro, todo mundo tem
+                  seus dias talvez em outro momento.
                 </Typography>
                 <Button onClick={onClose}>fechar</Button>
               </>
             )}
           </div>
-          {/* Types of model footer */}
           <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>

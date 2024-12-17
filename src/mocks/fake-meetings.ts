@@ -48,25 +48,25 @@ export const meetings: MeetingCardScheme[] = [
     type: "presential",
     sender: {
       id: 1,
-      username: "João",
+      name: "João",
       photo: "https://example.com/cartoon4.jpg",
       type: "volunteer",
       age: 30,
       email: "joao@example.com",
       meetingPreference: "presential",
-      uf: "SP",
-      town: "São Paulo"
+      state: "SP",
+      town: "São Paulo",
     },
     recipient: {
       id: 0,
-      username: "Vítor Oliveira",
+      name: "Vítor Oliveira",
       photo: "https://example.com/cartoon4.jpg",
       type: "volunteer",
       age: 25,
       email: "maria@example.com",
       meetingPreference: "presential",
-      uf: "SP",
-      town: "São Paulo"
+      state: "SP",
+      town: "São Paulo",
     },
   },
 ];
