@@ -43,6 +43,8 @@ import { Badge } from "../atoms/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../atoms/avatar";
 import { Typography } from "../atoms/typography";
 import { NavLink } from "react-router";
+import Container from "../atoms/container";
+import Logo from "../atoms/logo";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -154,6 +156,13 @@ const FindNewFriend = () => {
     setCurrentPage(1);
   }, [formValues]);
 
+  if (users.length === 0) {
+    return (
+      <Container variant="section" className="flex justify-center items-center">
+        <Logo size={128} className="animate-bounce" />
+      </Container>
+    );
+  }
   return (
     <>
       <Form {...form}>
