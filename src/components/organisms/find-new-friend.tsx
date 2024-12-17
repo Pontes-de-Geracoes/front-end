@@ -393,7 +393,8 @@ const FindNewFriend = () => {
               </DialogHeader>
               <div className="">
                 <Typography variant={"h3"}>
-                  Faça login para visualizar o perfil completo
+                  Se junte em nossa comunidade para ser conectar com outras
+                  gerações.
                 </Typography>
               </div>
               <DialogFooter>

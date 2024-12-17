@@ -11,7 +11,6 @@ export const login = async (user: LoginSchema) => {
 
     const { token, ...userRes } = res.data;
     Cookies.set("token", token, { expires: 7 });
-    console.log(userRes.user);
     return userRes.user as UserInfoScheme;
   } catch (e) {
     handleServerError(e);

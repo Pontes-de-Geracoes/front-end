@@ -19,8 +19,7 @@ const emptyUser: UserInfoScheme = {
   name: "",
   email: "",
   type: "elderly",
-  photo:
-    "https://www.petmag.com.br/app/uploads/petteca/famosos/8372/batatinha-01.jpg",
+  photo: "",
   age: 0,
   meetingPreference: "remote",
   state: "",
@@ -85,11 +84,13 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function update(user: (Partial<UserInfoScheme> & { id: number }) | null) {
-    if (user?.id)
+    if (user?.id) {
+      checkingToken();
       return setUser((oldInfo) => ({
         ...oldInfo,
         ...user,
       }));
+    }
 
     setUser(emptyUser);
   }
