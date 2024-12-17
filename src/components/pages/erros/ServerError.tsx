@@ -14,14 +14,14 @@ const ServerError = () => {
           variant="h2"
           className="w-4/5 text-xl font-bold md:text-2xl text-center"
         >
-          If you are seeing this the{" "}
+          Se você está vendo essa página provavelmente o{" "}
           <Anchor
             className="underline-offset-4 hover:underline "
             href="https://render.com/"
           >
             render
           </Anchor>{" "}
-          probably killed the server, please send me a {""}
+          desligador o servidor. Por favor, entre em contato {""}
           <Anchor
             className="underline-offset-4 hover:underline "
             href="https://www.linkedin.com/in/caulicons"

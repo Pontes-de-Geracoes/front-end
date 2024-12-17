@@ -8,6 +8,7 @@ import Connections from "../pages/connections";
 import Profile from "../pages/profile";
 import LoggedOnly from "./logged-only";
 import ServerError from "../pages/erros/ServerError";
+import NotFound from "../pages/erros/NotFound";
 
 const Routing = () => {
   return (
@@ -23,6 +24,7 @@ const Routing = () => {
               <Route path="profile" element={<Profile />} />
             </Route>
             <Route path="/500" element={<ServerError />} />
+            <Route path="/*" element={<NotFound />} />
           </Route>
         </Routes>
       </Context>
