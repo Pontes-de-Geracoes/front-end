@@ -12,6 +12,7 @@ export const loginSchema = userScheme.omit({
   id: true,
   name: true,
   bio: true,
+  necessities: true,
 });
 
 export type LoginSchema = z.infer<typeof loginSchema>;
