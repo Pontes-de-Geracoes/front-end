@@ -12,7 +12,7 @@ import {
 } from "@/components/atoms/form";
 import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
-import { Badge, LoaderCircle } from "lucide-react";
+import { LoaderCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Typography } from "../atoms/typography";
 import {
@@ -31,6 +31,7 @@ import {
 } from "../atoms/select";
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
+import { Badge } from "../atoms/badge";
 
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,7 @@ const RegisterForm = () => {
     { id: number; sigla: string; nome: string }[]
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
-  const [selectedNecessities, setSelectedNecessities] = useState<String[]>(["Caminhar", "Tecnologia"]);
+  const [selectedNecessities, setSelectedNecessities] = useState<string[]>([]);
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -65,8 +66,14 @@ const RegisterForm = () => {
   }, [form.watch("uf")]);
 
   const handleNecessitySelection = (necessity : string) => {
-    console.log("A necessidade selecionada foi: " + necessity);
-    setSelectedNecessities([...selectedNecessities, necessity]);
+    setSelectedNecessities((prevNecessities) => [...prevNecessities, necessity]);
+  }
+
+  const handleNecessityRemoval = (necessity : string) => {
+    //filtering only the necessities that are different from the clicked one
+    setSelectedNecessities((prevNecessities) =>
+      prevNecessities.filter((item) => item !== necessity)
+    );
   }
 
   function onSubmit(values: RegisterSchema) {
@@ -290,11 +297,16 @@ const RegisterForm = () => {
         <FormField
             control={form.control}
             name="necessities"
-            render={({ field }) => (
+            render={() => (
               <FormItem className="w-full">
                 <FormLabel>Necessidades</FormLabel>
                 <Select
-                  onValueChange={field.onChange}
+                    onValueChange={(value : string) => {
+                      const selectedNecessity = states.find((state) => state.sigla === value);
+                      if (selectedNecessity) {
+                        handleNecessitySelection(selectedNecessity.nome);
+                      }
+                    }}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -303,7 +315,7 @@ const RegisterForm = () => {
                   </FormControl>
                   <SelectContent>
                     {states.map((state) => (
-                      <SelectItem key={state.id} value={state.sigla} onClick={() => handleNecessitySelection(state.nome)}>
+                      <SelectItem key={state.id} value={state.sigla}>
                         {state.nome} 
                       </SelectItem>
                     ))}
@@ -314,11 +326,12 @@ const RegisterForm = () => {
             )}
           />
 
-          <div className="grid-cols-3 gap-4">
+          <div className="">
             {selectedNecessities.map((necessity, id) => (
-              <div key={id} className="bg-primary/80 w-[150px] p-1 m-1 text-center rounded-xl">
+              <Badge key={id} className="bg-primary/80 m-1 cursor-pointer" onClick={() => handleNecessityRemoval(necessity)}>
                 {necessity}
-              </div>
+                <X size={15} className="m-1"/>
+              </Badge>
             ))}
           </div>
 
