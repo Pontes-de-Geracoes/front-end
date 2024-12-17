@@ -1,5 +1,5 @@
 import * as React from "react";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
@@ -12,10 +12,11 @@ import {
   PopoverTrigger,
 } from "@/components/atoms/popover";
 
-interface DateRangePickerProps extends React.HTMLAttributes<HTMLDivElement> {
+interface DateRangePickerProps {
   from: Date;
   to: Date;
   onSelect: (range: DateRange | undefined) => void;
+  className?: string;
 }
 
 export function DateRangePicker({

@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
 import { validatingToken } from "../services/auth/validedToken.service";
 import { useNavigate } from "react-router";
-import { toast } from "../hooks/use-toast";
 
 export type UserContextSchema = {
   user: UserInfoScheme;
@@ -65,14 +64,14 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    toast({
+    /*  toast({
       title: "Encontro confirmado",
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(user, null, 2)}</code>
         </pre>
       ),
-    });
+    }); */
     //setIsLoading(false);
   }
 
@@ -83,9 +82,10 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     navigate("/");
   }
 
-  function update(user: (Partial<UserInfoScheme> & { id: number }) | null) {
+  async function update(
+    user: (Partial<UserInfoScheme> & { id: number }) | null
+  ) {
     if (user?.id) {
-      checkingToken();
       return setUser((oldInfo) => ({
         ...oldInfo,
         ...user,
@@ -104,7 +104,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated,
       //isLoading,
     }),
-    [user, isAuthenticated, logOut]
+    [user, logOut, update, isAuthenticated]
   );
 
   return (

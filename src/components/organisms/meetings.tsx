@@ -168,8 +168,8 @@ const Meetings = () => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="pendent">Pendente</SelectItem>
-                    <SelectItem value="confirm">Confirmado</SelectItem>
+                    <SelectItem value="pending">Pendente</SelectItem>
+                    <SelectItem value="confirmed">Confirmado</SelectItem>
                     <SelectItem value="cancel">Cancelado</SelectItem>
                   </SelectContent>
                 </Select>

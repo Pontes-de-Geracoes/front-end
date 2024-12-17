@@ -58,7 +58,6 @@ const FindNewFriend = () => {
 
   /* Users states */
   const [users, setUsers] = useState<UserCardScheme[]>([] as UserCardScheme[]);
-  const [filteredUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
   /* Pagination state */
@@ -114,37 +113,47 @@ const FindNewFriend = () => {
   });
 
   // Memoize filtered results
-  const currentUsers = useMemo(() => {
+
+  const { paginatedUsers, totalPages } = useMemo(() => {
+    // First apply filters
     const filtered = users.filter((user: UserCardScheme) => {
       const type =
         formValues.type === "" ||
         formValues.type === "all" ||
         user.type === formValues.type;
+
       const meetingPreference =
         formValues.meetingPreference === "" ||
         formValues.meetingPreference === "all" ||
         user.meetingPreference === formValues.meetingPreference;
+
       const uf =
-        formValues.uf === "" || user.state === formValues.uf?.toUpperCase();
-      const town = formValues.town === "" || user.town === formValues.town;
+        formValues.uf === "" ||
+        formValues.uf === "all" ||
+        user.state === formValues.uf;
+
+      const town =
+        formValues.town === "" ||
+        formValues.town === "all" ||
+        user.town === formValues.town;
 
       return type && meetingPreference && uf && town;
     });
 
+    // Then calculate pagination
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    return filtered.slice(indexOfFirstUser, indexOfLastUser);
-  }, [
-    users,
-    currentPage,
-    usersPerPage,
-    formValues.type,
-    formValues.meetingPreference,
-    formValues.uf,
-    formValues.town,
-  ]);
+    const paginatedUsers = filtered.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(filtered.length / usersPerPage);
 
-  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    return { paginatedUsers, totalPages };
+  }, [users, formValues, currentPage, usersPerPage]);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [formValues]);
+
   return (
     <>
       <Form {...form}>
@@ -261,50 +270,49 @@ const FindNewFriend = () => {
         </form>
       </Form>
       <div className="flex flex-wrap gap-10 justify-center mt-10 ">
-        {currentUsers.map((user: UserCardScheme) => (
+        {paginatedUsers.map((user: UserCardScheme) => (
           <UserCard
             key={user.id}
             user={user}
             onClick={() => setSelectedUser(user)}
           />
         ))}
+
         {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((prev) => Math.max(prev - 1, 1));
-                  }}
-                />
-              </PaginationItem>
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setCurrentPage(i + 1);
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage((prev) => prev - 1);
+                      }
                     }}
-                    isActive={currentPage === i + 1}
-                  >
-                    {i + 1}
-                  </PaginationLink>
+                  />
                 </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(index + 1)}
+                      isActive={currentPage === index + 1}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
         {selectedUser && isAuthenticated && (
           <UserModal
@@ -312,7 +320,6 @@ const FindNewFriend = () => {
             onClose={() => setSelectedUser(null)}
           />
         )}
-
         {!isAuthenticated && selectedUser && (
           <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
             <DialogContent className="sm:max-w-[600px] h-[60%] text-black  rounded-3xl text-center">
@@ -399,18 +406,23 @@ const FindNewFriend = () => {
               </div>
               <DialogFooter>
                 <div className="flex gap-4 w-full justify-center">
-                  <Button
-                    onClick={() => setSelectedUser(null)}
-                    className="w-full"
-                  >
-                    <NavLink to={"/login"}>Faça login</NavLink>
+                  <Button>
+                    <NavLink
+                      className="w-full"
+                      onClick={() => setSelectedUser(null)}
+                      to={"/login"}
+                    >
+                      Faça login
+                    </NavLink>
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setSelectedUser(null)}
-                    className="w-full"
-                  >
-                    <NavLink to={"/register"}>Cadastrar</NavLink>
+                  <Button variant="outline">
+                    <NavLink
+                      className="w-full"
+                      onClick={() => setSelectedUser(null)}
+                      to={"/register"}
+                    >
+                      Cadastrar
+                    </NavLink>
                   </Button>
                 </div>
               </DialogFooter>

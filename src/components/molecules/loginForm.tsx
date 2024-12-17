@@ -17,12 +17,11 @@ import { LoaderCircle } from "lucide-react";
 import { useContext, useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { login } from "../../services/auth/login.service";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { setIsAuthenticated, update } = useContext(
     UserContext
@@ -57,7 +56,7 @@ const LoginForm = () => {
 
       setIsAuthenticated(true);
       update(isLogged);
-      return navigate("/");
+      return (window.location.href = "/");
     } else {
       toast({
         title: "Erro",

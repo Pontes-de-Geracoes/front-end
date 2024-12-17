@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function throttle<T extends (...args: any[]) => any>(
   func: T,
   delay: number
@@ -19,8 +20,8 @@ const useTiltEffect = () => {
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
   const onMouseMove = useCallback(
-    throttle((e: MouseEvent<HTMLDivElement>) => {
-      const card = e.currentTarget;
+    throttle((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      const card = e.currentTarget as HTMLElement;
       const box = card.getBoundingClientRect();
       const x = e.clientX - box.left;
       const y = e.clientY - box.top;
