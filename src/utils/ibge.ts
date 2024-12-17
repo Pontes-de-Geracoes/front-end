@@ -3,7 +3,7 @@ import { states } from "../schemes/states.schemes";
 export const fetchStates = async () => {
   try {
     const response = await fetch(
-      "http://servicodados.ibge.gov.br/api/v1/localidades/estados"
+      "https://servicodados.ibge.gov.br/api/v1/localidades/estados"
     );
 
     const data = await response.json();
