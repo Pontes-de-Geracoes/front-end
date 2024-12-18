@@ -296,7 +296,7 @@ const FindNewFriend = () => {
 
         {!isAuthenticated && selectedUser && (
           <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
-            <DialogContent className="sm:max-w-[600px] h-[60%] text-black   rounded-3xl text-center">
+            <DialogContent className="sm:max-w-[600px] h-[90%] text-black   rounded-3xl text-center">
               <DialogHeader className="flex flex-col items-center relative">
                 <div className="absolute -top-2 -left-3 flex  gap-2">
                   <Badge className="">
@@ -379,24 +379,22 @@ const FindNewFriend = () => {
               </div>
               <DialogFooter>
                 <div className="flex gap-4 w-full justify-center">
-                  <Button>
-                    <NavLink
-                      className="w-full"
-                      onClick={() => setSelectedUser(null)}
-                      to={"/login"}
-                    >
-                      Faça login
-                    </NavLink>
-                  </Button>
-                  <Button variant="outline">
-                    <NavLink
-                      className="w-full"
-                      onClick={() => setSelectedUser(null)}
-                      to={"/register"}
-                    >
+                  <NavLink
+                    className="w-full"
+                    onClick={() => setSelectedUser(null)}
+                    to={"/login"}
+                  >
+                    <Button className="w-full">Faça login</Button>
+                  </NavLink>
+                  <NavLink
+                    className="w-full"
+                    onClick={() => setSelectedUser(null)}
+                    to={"/register"}
+                  >
+                    <Button className="w-full" variant="outline">
                       Cadastrar
-                    </NavLink>
-                  </Button>
+                    </Button>
+                  </NavLink>
                 </div>
               </DialogFooter>
             </DialogContent>
