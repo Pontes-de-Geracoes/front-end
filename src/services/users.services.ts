@@ -16,12 +16,14 @@ const getAll = async () => {
 };
 
 const create = async (data: RegisterScheme) => {
-  const {confirmPassword, ...serializedData} = {
-    ...data
+  const necessities = data.necessities.map((necessity) => necessity.id);
+  const { ...serializedData } = {
+    ...data,
+    necessities,
   };
 
   try {
-    const res = await api.post<any & { token: string }>(
+    const res = await api.post<unknown & { token: string }>(
       "/auth/register",
       serializedData
     );
@@ -35,7 +37,7 @@ const create = async (data: RegisterScheme) => {
   }
 };
 
-export const usersServices = { 
+export const usersServices = {
   getAll,
-  create
- };
+  create,
+};
