@@ -128,7 +128,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
                   {user?.town} - {user?.state}
                 </Typography>
               </div>
-              <div className="relative flex overflow-x-hidden max-w-[370px]">
+              <div className="relative flex overflow-x-hidden max-w-[240px] sm:max-w-[390px] md:max-w-[500px] ">
                 {/* TODO: Edit this later for the user interest */}
                 <div className="animate-marquee whitespace-nowrap space-x-2 ">
                   <Badge className="bg-primary/80">Caminhar</Badge>

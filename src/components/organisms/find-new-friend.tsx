@@ -296,7 +296,7 @@ const FindNewFriend = () => {
 
         {!isAuthenticated && selectedUser && (
           <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
-            <DialogContent className="sm:max-w-[600px] h-[60%] text-black  rounded-3xl text-center">
+            <DialogContent className="sm:max-w-[600px] h-[60%] text-black   rounded-3xl text-center">
               <DialogHeader className="flex flex-col items-center relative">
                 <div className="absolute -top-2 -left-3 flex  gap-2">
                   <Badge className="">
@@ -326,8 +326,7 @@ const FindNewFriend = () => {
                       {selectedUser?.town} - {selectedUser?.state}
                     </Typography>
                   </div>
-                  <div className="relative flex overflow-x-hidden max-w-[370px]">
-                    {/* TODO: Edit this later for the selectedUser interest */}
+                  <div className="relative flex overflow-x-hidden max-w-[240px] sm:max-w-[390px] md:max-w-[500px] ">
                     <div className="animate-marquee whitespace-nowrap space-x-2 ">
                       <Badge className="bg-primary/80">Caminhar</Badge>
                       <Badge className="bg-primary/80">Cantar</Badge>
