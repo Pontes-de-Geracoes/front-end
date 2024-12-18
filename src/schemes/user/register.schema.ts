@@ -9,9 +9,16 @@ export const registerScheme = userScheme
   })
   .extend({
     //Necessities should be an array of numbers (their id)
-    necessities: z.array(z.number()).min(6, {
-      message: "Selecione pelo menos 6 opções."
-    }),
+    necessities: z
+      .array(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+        })
+      )
+      .min(6, {
+        message: "Selecione pelo menos 6 opções.",
+      }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não são iguais.",
