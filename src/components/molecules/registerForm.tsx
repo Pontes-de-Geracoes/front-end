@@ -42,8 +42,12 @@ const RegisterForm = () => {
     { id: number; sigla: string; nome: string }[]
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
-  const [selectedNecessities, setSelectedNecessities] = useState<{id:number, name:string, description:string}[]>([]);
-  const [necessities, setNecessities] = useState<{id:number, name:string, description:string}[]>([]);
+  const [selectedNecessities, setSelectedNecessities] = useState<
+    { id: number; name: string; description: string }[]
+  >([]);
+  const [necessities, setNecessities] = useState<
+    { id: number; name: string; description: string }[]
+  >([]);
   const { setIsAuthenticated, update } = useContext(
     UserContext
   ) as UserContextSchema;
@@ -58,7 +62,7 @@ const RegisterForm = () => {
       necessities: [],
     },
   });
-  
+
   //this method listens to chenges in the type field and re-renders the component
   const userType = form.watch("type");
 
@@ -84,23 +88,30 @@ const RegisterForm = () => {
     console.log(necessities);
   }, []);
 
-
   //everytime selectedNecessities changes, the values of form should be updated
   useEffect(() => {
-    form.setValue("necessities", selectedNecessities.map((necessity) => necessity.id));
-    console.log(form.getValues("necessities"));
-  }, [selectedNecessities]);
-  
-
-  const handleNecessitySelection = (necessity: {id:number, name:string, description:string}) => {
-    setSelectedNecessities((prevNecessities) =>[
-      ...prevNecessities,
-      necessity
-      ]
+    form.setValue(
+      "necessities",
+      selectedNecessities.map((necessity) => necessity.id)
     );
+  }, [form, selectedNecessities]);
+
+  const handleNecessitySelection = (necessity: {
+    id: number;
+    name: string;
+    description: string;
+  }) => {
+    setSelectedNecessities((prevNecessities) => [
+      ...prevNecessities,
+      necessity,
+    ]);
   };
 
-  const handleNecessityRemoval = (necessity: {id:number, name:string, description:string}) => {
+  const handleNecessityRemoval = (necessity: {
+    id: number;
+    name: string;
+    description: string;
+  }) => {
     //filtering only the necessities that are different from the clicked one
     setSelectedNecessities((prevNecessities) =>
       prevNecessities.filter((item) => item.name !== necessity.name)
@@ -112,32 +123,22 @@ const RegisterForm = () => {
     const payload = {
       ...values,
       //get only the necessities Id
-      necessities: selectedNecessities.map((necessity) => necessity.id), 
+      necessities: selectedNecessities.map((necessity) => necessity.id),
     };
-    toast({
-        title: "Encontro confirmado",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(payload, null, 2)}
-            </code>
-          </pre>
-        ),
-      }); 
 
     (async () => {
-      try{
+      try {
         const savedUser = await usersServices.create(payload);
         console.log(savedUser);
-        if(savedUser){
+        if (savedUser) {
           setIsAuthenticated(true);
           update(savedUser);
           return (window.location.href = "/");
         }
-      }catch(e){
-        let errorMessage:string = "Erro desconhecido";
-        
-        if(e instanceof Error){
+      } catch (e) {
+        let errorMessage: string = "Erro desconhecido";
+
+        if (e instanceof Error) {
           errorMessage = e.message;
         }
 
@@ -355,38 +356,42 @@ const RegisterForm = () => {
                     ? "Quais são suas necessidades ?"
                     : "Quais são suas habilidades ?"}
                 </FormLabel>
-                
-                {//verifying if was possible to get the necessities form the database
-                necessities && necessities.length > 0 ?
-                  (//if was possible, show them in a dropdown menu
-                  <Select
-                    onValueChange={(value: string) => {
-                      const selectedNecessity = necessities.find(
-                        (necessity) => necessity.name === value
-                      );
-                      if (selectedNecessity) {
-                        handleNecessitySelection(selectedNecessity);
-                      }
-                    }
-                  }
-                  defaultValue={String(field.value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Quais são suas necessidades?" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
+
+                {
+                  //verifying if was possible to get the necessities form the database
+                  necessities && necessities.length > 0 ? (
+                    //if was possible, show them in a dropdown menu
+                    <Select
+                      onValueChange={(value: string) => {
+                        const selectedNecessity = necessities.find(
+                          (necessity) => necessity.name === value
+                        );
+                        if (selectedNecessity) {
+                          handleNecessitySelection(selectedNecessity);
+                        }
+                      }}
+                      defaultValue={String(field.value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Quais são suas necessidades?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
                         {necessities.map((necessity) => (
                           <SelectItem key={necessity.id} value={necessity.name}>
                             {necessity.name}
                           </SelectItem>
                         ))}
-                    </SelectContent>
-                  </Select>)
-                :
-                  //if it wasnt possible to fetch the necessities, shw message on screen
-                  (<span><br/>Não foi possível buscar as necessidades</span>)
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    //if it wasnt possible to fetch the necessities, shw message on screen
+                    <span>
+                      <br />
+                      Não foi possível buscar as necessidades
+                    </span>
+                  )
                 }
                 <FormMessage />
               </FormItem>
