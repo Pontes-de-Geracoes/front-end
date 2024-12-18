@@ -32,13 +32,15 @@ const Header = () => {
         <nav className="hidden md:block">
           <ul className="flex gap-10">
             {routes.map((route) => (
-              <NavLink
-                key={route.name}
-                className="px-3 py-2 hover:underline-offset-4 hover:underline"
-                to={route.href}
-              >
-                <li>{route.name}</li>
-              </NavLink>
+              <li key={route.name}>
+                <NavLink
+                  key={route.name}
+                  className="px-3 py-2 hover:underline-offset-4 hover:underline"
+                  to={route.href}
+                >
+                  {route.name}
+                </NavLink>
+              </li>
             ))}
           </ul>
         </nav>
@@ -83,12 +85,12 @@ const Header = () => {
             </DropdownMenu>
           ) : (
             <div className="flex gap-3">
-              <Button>
-                <NavLink to={"/login"}>Login</NavLink>
-              </Button>
-              <Button variant={"outline"}>
-                <NavLink to={"/register"}>Criar conta</NavLink>
-              </Button>
+              <NavLink to={"/login"}>
+                <Button>Login</Button>
+              </NavLink>
+              <NavLink to={"/register"}>
+                <Button variant={"outline"}>Criar conta</Button>
+              </NavLink>
             </div>
           )}
         </div>

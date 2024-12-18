@@ -7,15 +7,14 @@ export function ModeToggle() {
   const { setTheme, theme } = useTheme();
 
   return (
-    <div>
-      <Button
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        variant="outline"
-        size="icon"
-        className="fixed top-20 right-2 p-5"
-      >
-        {theme == "dark" ? <Sun /> : <Moon />}
-      </Button>
-    </div>
+    <Button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      variant="outline"
+      size="icon"
+      className="fixed top-20 right-2 p-5"
+      aria-label="Alterar tema"
+    >
+      {theme == "dark" ? <Sun /> : <Moon />}
+    </Button>
   );
 }
