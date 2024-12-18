@@ -23,7 +23,8 @@ const create = async (data: RegisterScheme) => {
   };
 
   try {
-    const res = await api.post<unknown & { token: string }>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const res = await api.post<any & { token: string }>(
       "/auth/register",
       serializedData
     );

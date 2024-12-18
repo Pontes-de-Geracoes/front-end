@@ -128,8 +128,11 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                 </div>
               </div>
               <Typography variant={"blockquote"} className="font-medium py-14 ">
-                {meeting.message}
+                {meeting.description}
               </Typography>
+              {/*  <Typography className="text-sm text-left  ">
+                Mensagem: {meeting.message}
+              </Typography> */}
             </DialogTitle>
           </DialogHeader>
 
@@ -240,7 +243,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                 </Form>
               ) : (
                 <>
-                  <Typography className="text">
+                  <Typography className="text-center">
                     Ansioso para o encontro ? Aguarde só mais um pouco que{" "}
                     {who?.name} vai confirmar com toda certeza.
                   </Typography>
@@ -248,12 +251,12 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                 </>
               ))}
             {meeting.status === "confirm" && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 text-center">
                 <Typography>
                   {who?.name} confirmou o encontro, não esqueça de comparecer.
-                  Segue mais informações sobre o encontro abaixo:
+                  Segue a mensagem que {who?.name} enviou:
                 </Typography>
-                <Typography>{meeting.message}</Typography>
+                <Typography className="mb-2">{meeting.message}</Typography>
                 <Button onClick={onClose}>Fechar</Button>
               </div>
             )}

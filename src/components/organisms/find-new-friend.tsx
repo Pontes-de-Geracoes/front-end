@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../atoms/select";
-import { useEffect, useState, useMemo, useContext } from "react";
+import { useEffect, useState, useMemo, useContext, useCallback } from "react";
 import { useWatch, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -45,12 +45,14 @@ import { Typography } from "../atoms/typography";
 import { NavLink } from "react-router";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
+import { Checkbox } from "../atoms/checkbox";
 
 const filterScheme = z.object({
   type: z.string(),
   uf: z.string(),
   town: z.string(),
   meetingPreference: z.enum(["in person", "remote", "hybrid", "all", ""]),
+  sortByMatches: z.boolean().default(false), // Add th
 });
 
 type filterScheme = z.infer<typeof filterScheme>;
@@ -98,27 +100,38 @@ const FindNewFriend = () => {
 
   useEffect(() => {
     (async () => {
-      const usersFetch = await usersServices.getAll();
-      if (userInfo.id) {
-        const usersFilted = usersFetch.filter(
-          (user) => user.id !== userInfo.id
-        );
-        setUsers(usersFilted);
-      } else {
-        setUsers(usersFetch);
+      let usersFetch = await usersServices.getAll();
+
+      if (isAuthenticated) {
+        usersFetch = usersFetch.filter((user) => user.id !== userInfo.id);
       }
+
+      // shuffle the array
+      usersFetch = usersFetch.sort(() => Math.random() - 0.5);
+      setUsers(usersFetch);
     })();
-  }, [userInfo.id]);
+  }, [isAuthenticated, userInfo]);
 
   const formValues = useWatch({
     control: form.control,
   });
 
   // Memoize filtered results
+  const calculateNecessityMatches = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (userNecessities: any[]) => {
+      if (!userInfo?.necessities || !userNecessities) return 0;
+
+      return userInfo.necessities.filter((userNeed) =>
+        userNecessities.some((necessity) => necessity.id === userNeed.id)
+      ).length;
+    },
+    [userInfo?.necessities]
+  );
 
   const { paginatedUsers, totalPages } = useMemo(() => {
-    // First apply filters
-    const filtered = users.filter((user: UserCardScheme) => {
+    // Create a new array to avoid mutation
+    let filtered = [...users].filter((user: UserCardScheme) => {
       const type =
         formValues.type === "" ||
         formValues.type === "all" ||
@@ -142,19 +155,40 @@ const FindNewFriend = () => {
       return type && meetingPreference && uf && town;
     });
 
-    // Then calculate pagination
+    // Sort by matches if enabled
+    if (formValues.sortByMatches) {
+      filtered = filtered.sort((a, b) => {
+        const matchesA = calculateNecessityMatches(a.necessities);
+        const matchesB = calculateNecessityMatches(b.necessities);
+        if (matchesA === matchesB) {
+          // Secondary sort by name if matches are equal
+          return a.name.localeCompare(b.name);
+        }
+        return matchesB - matchesA;
+      });
+    }
+
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const paginatedUsers = filtered.slice(indexOfFirstUser, indexOfLastUser);
     const totalPages = Math.ceil(filtered.length / usersPerPage);
 
-    return { paginatedUsers, totalPages };
-  }, [users, formValues, currentPage, usersPerPage]);
+    return {
+      paginatedUsers,
+      totalPages,
+    };
+  }, [users, formValues, currentPage, usersPerPage, calculateNecessityMatches]);
 
-  // Reset to first page when filters change
+  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [formValues]);
+  }, [
+    formValues.sortByMatches,
+    formValues.type,
+    formValues.meetingPreference,
+    formValues.uf,
+    formValues.town,
+  ]);
 
   if (users.length === 0) {
     return (
@@ -273,6 +307,23 @@ const FindNewFriend = () => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="sortByMatches"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2 justify-center">
+                <label htmlFor="sortByMatches" className="text-sm font-medium">
+                  Ordenar por compatibilidade
+                </label>
+                <Checkbox
+                  id="sortByMatches"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  className="h-10 w-6  rounded border-gray-300"
+                />
+              </FormItem>
+            )}
+          />
           <Button onClick={() => form.reset()} type="button">
             Resetar filtros
           </Button>
@@ -328,18 +379,24 @@ const FindNewFriend = () => {
                   </div>
                   <div className="relative flex overflow-x-hidden max-w-[240px] sm:max-w-[390px] md:max-w-[500px] ">
                     <div className="animate-marquee whitespace-nowrap space-x-2 ">
-                    {
-                      selectedUser.necessities.map((necessity) => (
-                        <Badge key={necessity.id} className="bg-primary/80 w-fit h-fit">{necessity.name}</Badge>
-                      ))
-                    }
+                      {selectedUser.necessities.map((necessity) => (
+                        <Badge
+                          key={necessity.id}
+                          className="bg-primary/80 w-fit h-fit"
+                        >
+                          {necessity.name}
+                        </Badge>
+                      ))}
                     </div>
                     <div className="absolute top-0 animate-marquee2 whitespace-nowrap space-x-2 ">
-                    {
-                      selectedUser.necessities.map((necessity) => (
-                        <Badge key={necessity.id} className="bg-primary/80 w-fit h-fit">{necessity.name}</Badge>
-                      ))
-                    }
+                      {selectedUser.necessities.map((necessity) => (
+                        <Badge
+                          key={necessity.id}
+                          className="bg-primary/80 w-fit h-fit"
+                        >
+                          {necessity.name}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                   <div className="grid gap-4 py-4">

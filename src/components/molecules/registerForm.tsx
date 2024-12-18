@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -118,7 +119,7 @@ const RegisterForm = () => {
     name: "necessities",
   });
 
-  const handleNecessitySelection = (selectedNecessity: Necessity) => {
+  const handleNecessitySelection = (selectedNecessity: any) => {
     // Check if necessity already exists
     const exists = fields.some((field) => field.id === selectedNecessity.id);
 
@@ -127,7 +128,7 @@ const RegisterForm = () => {
     }
   };
 
-  const handleNecessityRemoval = (necessityToRemove: Necessity) => {
+  const handleNecessityRemoval = (necessityToRemove: any) => {
     const index = fields.findIndex(
       (field) => field.id === necessityToRemove.id
     );
