@@ -59,8 +59,8 @@ const LoginForm = () => {
       return (window.location.href = "/");
     } else {
       toast({
-        title: "Erro",
-        description: "Usuário ou senha inválidos",
+        title: "Usuário ou senha inválidos",
+        description: "Por favor, tente novamente.",
         variant: "destructive",
       });
     }
