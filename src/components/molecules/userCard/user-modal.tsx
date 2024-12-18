@@ -131,40 +131,18 @@ export function UserModal({ user, onClose }: UserModalProps) {
               <div className="relative flex overflow-x-hidden max-w-[240px] sm:max-w-[390px] md:max-w-[500px] ">
                 {/* TODO: Edit this later for the user interest */}
                 <div className="animate-marquee whitespace-nowrap space-x-2 ">
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
+                  {
+                    user.necessities.map((necessity) => (
+                      <Badge key={necessity.id} className="bg-primary/80 w-fit h-fit">{necessity.name}</Badge>
+                    ))
+                  }
                 </div>
                 <div className="absolute top-0 animate-marquee2 whitespace-nowrap space-x-2 ">
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
-                  <Badge className="bg-primary/80">Caminhar</Badge>
-                  <Badge className="bg-primary/80">Cantar</Badge>
-                  <Badge className="bg-primary/80">Dançar</Badge>
-                  <Badge className="bg-primary/80">Tecnologia</Badge>
+                  {
+                    user.necessities.map((necessity) => (
+                      <Badge key={necessity.id} className="bg-primary/80 w-fit h-fit">{necessity.name}</Badge>
+                    ))
+                  }
                 </div>
               </div>
               <div className="grid gap-4 py-4">

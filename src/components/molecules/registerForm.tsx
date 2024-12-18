@@ -13,7 +13,7 @@ import {
 import { Input } from "../atoms/input";
 import { toast } from "../../hooks/use-toast";
 import { LoaderCircle, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Typography } from "../atoms/typography";
 import {
   registerScheme,
@@ -33,6 +33,8 @@ import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Badge } from "../atoms/badge";
 import { necessityServices } from "@/services/necessities.services";
+import { usersServices } from "@/services/users.services";
+import { UserContext, UserContextSchema } from "@/contexts/user.context";
 
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -40,8 +42,11 @@ const RegisterForm = () => {
     { id: number; sigla: string; nome: string }[]
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
-  const [selectedNecessities, setSelectedNecessities] = useState<string[]>([]);
+  const [selectedNecessities, setSelectedNecessities] = useState<{id:number, name:string, description:string}[]>([]);
   const [necessities, setNecessities] = useState<{id:number, name:string, description:string}[]>([]);
+  const { setIsAuthenticated, update } = useContext(
+    UserContext
+  ) as UserContextSchema;
 
   const form = useForm<RegisterScheme>({
     resolver: zodResolver(registerScheme),
@@ -50,6 +55,7 @@ const RegisterForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      necessities: [],
     },
   });
   
@@ -78,49 +84,72 @@ const RegisterForm = () => {
     console.log(necessities);
   }, []);
 
-  const isListOfStrings = (value: any): boolean => {
-    //verify if a value is an array of string
-    return Array.isArray(value) && value.every((item) => typeof item === "string");
-  };
 
-  const handleNecessitySelection = (necessity: string) => {
-    setSelectedNecessities((prevNecessities) => [
+  //everytime selectedNecessities changes, the values of form should be updated
+  useEffect(() => {
+    form.setValue("necessities", selectedNecessities.map((necessity) => necessity.id));
+    console.log(form.getValues("necessities"));
+  }, [selectedNecessities]);
+  
+
+  const handleNecessitySelection = (necessity: {id:number, name:string, description:string}) => {
+    setSelectedNecessities((prevNecessities) =>[
       ...prevNecessities,
-      necessity,
-    ]);
+      necessity
+      ]
+    );
   };
 
-  const handleNecessityRemoval = (necessity: string) => {
+  const handleNecessityRemoval = (necessity: {id:number, name:string, description:string}) => {
     //filtering only the necessities that are different from the clicked one
     setSelectedNecessities((prevNecessities) =>
-      prevNecessities.filter((item) => item !== necessity)
+      prevNecessities.filter((item) => item.name !== necessity.name)
     );
   };
 
   function onSubmit(values: RegisterScheme) {
     setLoading(true);
-
-    // 3. Handle your form submission.
-    //const confirmedUser = await login(values);
-
-    // 4. Handle the response.
-    /* if (confirmedUser) {
-     
-      / set/update authentication token
-      /update
-
-     return router.push("/"); 
-    } */
-
-    // 5. Handle the error.
+    const payload = {
+      ...values,
+      //get only the necessities Id
+      necessities: selectedNecessities.map((necessity) => necessity.id), 
+    };
     toast({
-      title: "Email ou senha incorretos",
-      description: "Problema no servido.",
-      variant: "destructive",
-    });
+        title: "Encontro confirmado",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(payload, null, 2)}
+            </code>
+          </pre>
+        ),
+      }); 
+
+    (async () => {
+      try{
+        const savedUser = await usersServices.create(payload);
+        console.log(savedUser);
+        if(savedUser){
+          setIsAuthenticated(true);
+          update(savedUser);
+          return (window.location.href = "/");
+        }
+      }catch(e){
+        let errorMessage:string = "Erro desconhecido";
+        
+        if(e instanceof Error){
+          errorMessage = e.message;
+        }
+
+        toast({
+          title: "Não foi possível realizar o cadastro",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    })();
 
     setLoading(false);
-    console.log(values);
   }
 
   return (
@@ -303,10 +332,10 @@ const RegisterForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="presential">Presencial</SelectItem>
+                  <SelectItem value="in person">Presencial</SelectItem>
                   <SelectItem value="remote">Remoto</SelectItem>
-                  <SelectItem value="both">
-                    Ambos - (Presencial e Remoto)
+                  <SelectItem value="hybrid">
+                    Híbrido - (Presencial e Remoto)
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -319,7 +348,7 @@ const RegisterForm = () => {
           <FormField
             control={form.control}
             name="necessities"
-            render={() => (
+            render={({ field }) => (
               <FormItem className="w-full">
                 <FormLabel>
                   {form.getValues("type") === "elderly"
@@ -336,9 +365,11 @@ const RegisterForm = () => {
                         (necessity) => necessity.name === value
                       );
                       if (selectedNecessity) {
-                        handleNecessitySelection(selectedNecessity.name);
+                        handleNecessitySelection(selectedNecessity);
                       }
-                    }}
+                    }
+                  }
+                  defaultValue={String(field.value)}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -370,7 +401,7 @@ const RegisterForm = () => {
               className="bg-primary/80 m-1 cursor-pointer"
               onClick={() => handleNecessityRemoval(necessity)}
             >
-              {necessity}
+              {necessity.name}
               <X size={15} className="m-1" />
             </Badge>
           ))}
