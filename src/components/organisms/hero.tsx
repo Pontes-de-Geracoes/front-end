@@ -15,8 +15,8 @@ const Hero = () => {
           Conectando Gerações: Voluntários e Idosos Juntos
         </Typography>
         <Typography>
-          Bem-vindo à nossa plataforma! Aqui, jovens voluntários se conectam c
-          om idosos, promovendo interações que enriquecem vidas e criam laços
+          Bem-vindo à nossa plataforma! Aqui, jovens voluntários se conectam com
+          idosos, promovendo interações que enriquecem vidas e criam laços
           significativos.
         </Typography>
         <div className="flex gap-3">
