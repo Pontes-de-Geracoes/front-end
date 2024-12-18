@@ -25,6 +25,7 @@ const emptyUser: UserInfoScheme = {
   town: "",
   bio: "",
   meetings: [],
+  necessities: []
 };
 
 export const UserContext = React.createContext<UserContextSchema>({

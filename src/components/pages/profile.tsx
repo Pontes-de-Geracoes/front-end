@@ -30,22 +30,11 @@ const Profile = () => {
               </Typography>
             </div>
             <div className="flex flex-row max-w-[600px] justify-center md:justify-end flex-wrap gap-3">
-              <Badge className="bg-primary/80">Caminhar</Badge>
-              <Badge className="bg-primary/80">Cantar</Badge>
-              <Badge className="bg-primary/80">Dançar</Badge>
-              <Badge className="bg-primary/80">Tecnologia</Badge>
-              <Badge className="bg-primary/80">Caminhar</Badge>
-              <Badge className="bg-primary/80">Cantar</Badge>
-              <Badge className="bg-primary/80">Dançar</Badge>
-              <Badge className="bg-primary/80">Tecnologia</Badge>
-              <Badge className="bg-primary/80">Caminhar</Badge>
-              <Badge className="bg-primary/80">Cantar</Badge>
-              <Badge className="bg-primary/80">Dançar</Badge>
-              <Badge className="bg-primary/80">Tecnologia</Badge>
-              <Badge className="bg-primary/80">Caminhar</Badge>
-              <Badge className="bg-primary/80">Cantar</Badge>
-              <Badge className="bg-primary/80">Dançar</Badge>
-              <Badge className="bg-primary/80">Tecnologia</Badge>
+              {
+                user.necessities.map((necessity) => (
+                  <Badge key={necessity.id} className="bg-primary/80 w-fit h-fit">{necessity.name}</Badge>
+                ))
+              }
             </div>
           </div>
           <Typography variant={"h2"}>{user.bio}</Typography>

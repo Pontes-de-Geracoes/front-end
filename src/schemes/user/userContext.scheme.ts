@@ -6,8 +6,6 @@ export const userContextScheme = userScheme
   .omit({
     confirmPassword: true,
     password: true,
-
-    necessities: true,
   })
   .extend({
     meetings: z.array(meetingScheme).optional(),

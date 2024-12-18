@@ -8,7 +8,7 @@ export const userScheme = z.object({
   age: z.number().min(18, {
     message: "Você deve ter no mínimo 18 anos para se cadastrar.",
   }),
-  photo: z
+  photo: z 
     .string()
     .trim()
     //.url("Invalid image format. The image must be a URL.")
@@ -49,7 +49,7 @@ export const userScheme = z.object({
       }
     ) */ confirmPassword: z.string(),
   bio: z.string().max(500, {}).optional(),
-  necessities: z.array(z.string()),
+  necessities: z.array(z.object({id:z.number(), name:z.string(), description:z.string()}))
 });
 
 export type UserSchema = z.infer<typeof userScheme>;
