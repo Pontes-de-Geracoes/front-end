@@ -32,6 +32,7 @@ import {
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Badge } from "../atoms/badge";
+import { necessityServices } from "@/services/necessities.services";
 
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,8 @@ const RegisterForm = () => {
   >([]);
   const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
   const [selectedNecessities, setSelectedNecessities] = useState<string[]>([]);
-  
+  const [necessities, setNecessities] = useState<{id:number, name:string, description:string}[]>([]);
+
   const form = useForm<RegisterScheme>({
     resolver: zodResolver(registerScheme),
     defaultValues: {
@@ -67,6 +69,19 @@ const RegisterForm = () => {
       setCities(cities);
     })();
   }, [form.watch("state")]);
+
+  useEffect(() => {
+    (async () => {
+      const necessitiesFetch = await necessityServices.getAll();
+      setNecessities(necessitiesFetch);
+    })();
+    console.log(necessities);
+  }, []);
+
+  const isListOfStrings = (value: any): boolean => {
+    //verify if a value is an array of string
+    return Array.isArray(value) && value.every((item) => typeof item === "string");
+  };
 
   const handleNecessitySelection = (necessity: string) => {
     setSelectedNecessities((prevNecessities) => [
@@ -311,29 +326,37 @@ const RegisterForm = () => {
                     ? "Quais são suas necessidades ?"
                     : "Quais são suas habilidades ?"}
                 </FormLabel>
-                <Select
-                  onValueChange={(value: string) => {
-                    const selectedNecessity = states.find(
-                      (state) => state.sigla === value
-                    );
-                    if (selectedNecessity) {
-                      handleNecessitySelection(selectedNecessity.nome);
-                    }
-                  }}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Quais são suas necessidades?" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {states.map((state) => (
-                      <SelectItem key={state.id} value={state.sigla}>
-                        {state.nome}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                
+                {//verifying if was possible to get the necessities form the database
+                necessities && necessities.length > 0 ?
+                  (//if was possible, show them in a dropdown menu
+                  <Select
+                    onValueChange={(value: string) => {
+                      const selectedNecessity = necessities.find(
+                        (necessity) => necessity.name === value
+                      );
+                      if (selectedNecessity) {
+                        handleNecessitySelection(selectedNecessity.name);
+                      }
+                    }}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Quais são suas necessidades?" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        {necessities.map((necessity) => (
+                          <SelectItem key={necessity.id} value={necessity.name}>
+                            {necessity.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>)
+                :
+                  //if it wasnt possible to fetch the necessities, shw message on screen
+                  (<span><br/>Não foi possível buscar as necessidades</span>)
+                }
                 <FormMessage />
               </FormItem>
             )}
