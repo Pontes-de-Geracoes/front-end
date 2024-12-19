@@ -59,7 +59,8 @@ const Meetings = () => {
 
   useEffect(() => {
     (async () => {
-      const fetchMeetings = await meetingsServices.getAllByUserID(user.id);
+      const fetchMeetings =
+        (await meetingsServices.getAllByUserID(user.id)) || [];
       setMeetings(fetchMeetings);
     })();
   }, [user.id, selectedMeeting]);
