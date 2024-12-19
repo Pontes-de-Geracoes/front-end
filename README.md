@@ -1,3 +1,27 @@
+# Ponte de Gerações | Front-end
+
+O site desenvolvido busca conectar idosos necessiatados a pessoas que querem ajudar. Essa conexão é feita através do match entre necessidades dos idosos e habilidades dos voluntários.
+
+## Página Home
+
+![image](https://github.com/user-attachments/assets/553560df-7ef5-424d-a14c-3bb3eb66072c)
+
+## Página de Cadastro
+
+![image](https://github.com/user-attachments/assets/1f1f21ac-ad5e-4095-b08b-b5c5accdb895)
+
+## Página de Login
+
+![image](https://github.com/user-attachments/assets/1cce19ee-1287-4cb6-b8a3-8092a078f9c1)
+
+## Página de Conexões
+
+![image](https://github.com/user-attachments/assets/20069efb-8f3d-4075-9c0f-5083497aad4a)
+
+## Página de Perfil
+
+![image](https://github.com/user-attachments/assets/94f263f1-d02f-4069-9b49-4aa4a4e5d344)
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
