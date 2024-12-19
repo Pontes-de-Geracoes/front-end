@@ -16,6 +16,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "../atoms/form";
 import { fetchCities, fetchStates } from "../../utils/ibge";
@@ -267,7 +268,6 @@ const FindNewFriend = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/*    */}
                       {cities.map((city) => (
                         <SelectItem key={city.id} value={city.nome}>
                           {city.nome}
@@ -307,23 +307,26 @@ const FindNewFriend = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="sortByMatches"
-            render={({ field }) => (
-              <FormItem className="flex items-center space-x-2 justify-center">
-                <label htmlFor="sortByMatches" className="text-sm font-medium">
-                  Ordenar por compatibilidade
-                </label>
-                <Checkbox
-                  id="sortByMatches"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  className="h-10 w-6  rounded border-gray-300"
-                />
-              </FormItem>
-            )}
-          />
+          {isAuthenticated && (
+            <FormField
+              control={form.control}
+              name="sortByMatches"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 justify-center">
+                  <FormLabel className="text-sm font-medium ">
+                    Ordenar por compatibilidade
+                  </FormLabel>
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="h-10 md:w-6 w-20 rounded border-gray-300 "
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          )}
           <Button onClick={() => form.reset()} type="button">
             Resetar filtros
           </Button>
