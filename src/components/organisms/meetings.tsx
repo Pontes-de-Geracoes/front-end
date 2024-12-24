@@ -36,7 +36,7 @@ import MeetingCard from "../molecules/meeetingCard/meeeting-card";
 import MeetingModal from "../molecules/meeetingCard/meeting-modal";
 import { MeetingCardScheme } from "../../schemes/meeting/meeting-card.scheme";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
-import { services } from "../../services/service";
+import { services } from "../../services/services";
 
 const profileMeetingsForm = z.object({
   name: z.string(),
@@ -58,13 +58,16 @@ const Meetings = () => {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    (async () => {
-      const fetchMeetings = await services.get<MeetingCardScheme[]>({
-        url: `/meetings/user/${user.id}`,
-      });
-      setMeetings(fetchMeetings);
-    })();
-  }, [user.id, selectedMeeting]);
+    if (user) {
+      (async () => {
+        const fetchMeetings = await services.get<MeetingCardScheme[]>({
+          url: `/meetings/user/${user.id}`,
+        });
+
+        if (fetchMeetings) setMeetings(fetchMeetings);
+      })();
+    }
+  }, [user, selectedMeeting]);
 
   const form = useForm<ProfileMeetingsForm>({
     resolver: zodResolver(profileMeetingsForm),

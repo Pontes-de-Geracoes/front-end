@@ -43,7 +43,7 @@ const Header = () => {
           </ul>
         </nav>
         <div>
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

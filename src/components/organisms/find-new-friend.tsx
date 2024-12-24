@@ -46,7 +46,7 @@ import { NavLink } from "react-router";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
 import { Checkbox } from "../atoms/checkbox";
-import { services } from "../../services/service";
+import { services } from "../../services/services";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -106,11 +106,13 @@ const FindNewFriend = () => {
         withCredentials: false,
       });
 
-      if (isAuthenticated)
-        usersFetch = usersFetch.filter((user) => user.id !== userInfo.id);
+      if (usersFetch) {
+        if (isAuthenticated)
+          usersFetch = usersFetch.filter((user) => user.id !== userInfo?.id);
 
-      usersFetch = usersFetch.sort(() => Math.random() - 0.5);
-      setUsers(usersFetch);
+        usersFetch = usersFetch.sort(() => Math.random() - 0.5);
+        setUsers(usersFetch);
+      }
     })();
   }, [isAuthenticated, userInfo]);
 

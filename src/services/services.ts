@@ -1,51 +1,5 @@
-import axios, { AxiosResponse, AxiosHeaders, AxiosRequestConfig } from "axios";
-import { handleServerError } from "../utils/http";
-import Cookies from "js-cookie";
-
-const token = Cookies.get("token");
-
-export const getConfig = (): AxiosRequestConfig<object> => ({
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
-
-export const handleResponse = <T>(
-  res: AxiosResponse<T>,
-  expectedStatus: number
-): T => {
-  if (res.status !== expectedStatus) {
-    throw new Error(JSON.stringify(res));
-  }
-  return res.data;
-};
-
-const handleRequest = async <T>(
-  method: string,
-  url: string,
-  withCredentials: boolean = true,
-  expectedStatus: number = 200,
-  data?: object,
-  config?: AxiosHeaders
-): Promise<T> => {
-  try {
-    const response: AxiosResponse<T> = await axios({
-      baseURL: import.meta.env.VITE_URL_API,
-      method,
-      url,
-      data,
-      headers: withCredentials ? getConfig().headers : {},
-      ...config,
-    });
-
-    console.log(response);
-
-    return handleResponse(response, expectedStatus);
-  } catch (e) {
-    handleServerError(e);
-    return {} as T;
-  }
-};
+import { AxiosHeaders } from "axios";
+import { handleRequest } from "../utils/http";
 
 export const services = {
   get: <T>({

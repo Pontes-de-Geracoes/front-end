@@ -47,10 +47,11 @@ import {
 } from "../../../schemes/meeting/meeting-create.scheme";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../../contexts/user.context";
-import { services } from "../../../services/service";
+import { services } from "../../../services/services";
 
 export function UserModal({ user, onClose }: UserModalProps) {
   const { user: userInfo } = useContext(UserContext);
+
   const form = useForm<MeetingCreateScheme>({
     resolver: zodResolver(meetingCreateScheme),
     defaultValues: {
@@ -59,15 +60,13 @@ export function UserModal({ user, onClose }: UserModalProps) {
       message: "",
       status: "pending",
       sender: {
-        id: userInfo.id,
+        id: userInfo?.id,
       },
       recipient: {
         id: user?.id,
       },
     },
   });
-  form.setValue("sender.id", userInfo.id);
-  form.setValue("recipient.id", user?.id as number);
 
   useEffect(() => {
     console.log(form.formState.errors);

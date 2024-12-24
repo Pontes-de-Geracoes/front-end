@@ -5,31 +5,16 @@ import { useNavigate } from "react-router";
 import { auth } from "../services/auth.service";
 
 export type UserContextSchema = {
-  user: UserInfoScheme;
+  user: UserInfoScheme | null;
   isAuthenticated: boolean;
   update: (user: UserInfoScheme) => void;
   logOut: () => void;
-  //isLoading: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const emptyUser: UserInfoScheme = {
-  id: 1,
-  name: "",
-  email: "",
-  type: "elderly",
-  photo: "",
-  age: 0,
-  meetingPreference: "remote",
-  state: "",
-  town: "",
-  bio: "",
-  meetings: [],
-  necessities: [],
-};
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = React.createContext<UserContextSchema>({
-  user: emptyUser,
+  user: null,
   isAuthenticated: false,
   update: () => {},
   logOut: () => {},
@@ -42,46 +27,34 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const navigate = useNavigate();
-  const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);
+  const [user, setUser] = React.useState<UserInfoScheme | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   async function checkingToken() {
-    const token = Cookies.get("token");
+    if (!Cookies.get("token")) return setIsAuthenticated(false);
 
-    if (!token) setIsAuthenticated(false);
-    else checkingToken(token);
+    const user = await auth.validatingToken();
+    if (!user) return setIsAuthenticated(false);
 
-    async function checkingToken(token: string) {
-      if (await auth.validatingToken(token)) {
-        const user = await auth.validatingToken(token);
-        if (!user) setIsAuthenticated(false);
-        else {
-          setIsAuthenticated(true);
-          setUser(user);
-        }
-      }
-    }
+    setIsAuthenticated(true);
+    setUser(user);
   }
 
-  function logOut() {
-    setUser(emptyUser);
+  const logOut = React.useCallback(() => {
+    setUser(null);
     Cookies.remove("token");
     setIsAuthenticated(false);
     navigate("/");
-  }
+  }, [navigate]);
 
-  async function update(
-    user: (Partial<UserInfoScheme> & { id: number }) | null
-  ) {
-    if (user?.id) {
-      return setUser((oldInfo) => ({
-        ...oldInfo,
-        ...user,
-      }));
-    }
+  const update = React.useCallback(
+    async (user: (Partial<UserInfoScheme> & { id: number }) | null) => {
+      if (user?.id) return setUser(user as UserInfoScheme);
 
-    setUser(emptyUser);
-  }
+      setUser(null);
+    },
+    []
+  );
 
   const contextValue = React.useMemo(
     () => ({
@@ -90,7 +63,6 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
       update,
       isAuthenticated,
       setIsAuthenticated,
-      //isLoading,
     }),
     [user, logOut, update, isAuthenticated]
   );

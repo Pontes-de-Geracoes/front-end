@@ -36,7 +36,7 @@ import { Badge } from "../atoms/badge";
 import { UserContext, UserContextSchema } from "@/contexts/user.context";
 import { useFieldArray } from "react-hook-form";
 import { auth } from "../../services/auth.service";
-import { services } from "../../services/service";
+import { services } from "../../services/services";
 import { NecessityScheme } from "../../schemes/necessity/necessity.scheme";
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
@@ -84,7 +84,8 @@ const RegisterForm = () => {
         url: "/necessities",
         withCredentials: false,
       });
-      setNecessities(necessitiesFetch);
+
+      if (necessitiesFetch) setNecessities(necessitiesFetch);
     })();
   }, []);
 

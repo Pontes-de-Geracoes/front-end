@@ -41,7 +41,7 @@ import {
   meetingUpdateScheme,
   MeetingUpdateScheme,
 } from "../../../schemes/meeting/meeting.-update.scheme";
-import { services } from "../../../services/service";
+import { services } from "../../../services/services";
 
 type MeetingModalProps = Readonly<{
   meeting?: MeetingCardScheme;
