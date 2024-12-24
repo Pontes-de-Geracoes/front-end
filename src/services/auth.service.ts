@@ -71,7 +71,7 @@ const register = async (
 const validatingToken = async (): Promise<UserInfoScheme | null> => {
   try {
     if (!Cookies.get(COOKIE_NAMES.TOKEN)) {
-      return {} as UserInfoScheme;
+      return null;
     }
     const res = await api.get<UserInfoScheme>(
       AUTH_ENDPOINTS.PROFILE,
