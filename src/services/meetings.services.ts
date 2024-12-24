@@ -9,11 +9,6 @@ import { MeetingCreateScheme } from "../schemes/meeting/meeting-create.scheme";
 import { MeetingCardScheme } from "../schemes/meeting/meeting-card.scheme";
 import { MeetingUpdateScheme } from "../schemes/meeting/meeting.-update.scheme";
 
-type Result<T> = {
-  data: T | null;
-  error: string | null;
-};
-
 const getAll = async () => {
   try {
     const res = await api.get<MeetingScheme[]>("/meetings", getConfig());
@@ -52,40 +47,34 @@ const getAllByUserID = async (id: number) => {
 
 const create = async (
   data: MeetingCreateScheme
-): Promise<Result<MeetingCreateScheme>> => {
+): Promise<MeetingCreateScheme> => {
   try {
     const res = await api.post<MeetingCreateScheme>(
       "/meetings",
       { ...data },
       getConfig()
     );
-    return {
-      data: handleResponse(res, 201),
-      error: null,
-    };
+    return handleResponse(res, 201);
   } catch (e) {
     handleServerError(e);
-    return { data: null, error: "Failed to create meeting" };
+    return {} as MeetingCreateScheme;
   }
 };
 
 const update = async (
   id: number,
   data: Partial<MeetingUpdateScheme>
-): Promise<Result<MeetingCardScheme>> => {
+): Promise<MeetingCardScheme> => {
   try {
     const res = await api.put<MeetingCardScheme>(
       `/meetings/${id}`,
       { ...data },
       getConfig()
     );
-    return {
-      data: handleResponse(res, 200),
-      error: null,
-    };
+    return handleResponse(res, 201);
   } catch (e) {
     handleServerError(e);
-    return { data: null, error: "Failed to update meeting" };
+    return {} as MeetingCardScheme;
   }
 };
 

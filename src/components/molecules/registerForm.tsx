@@ -34,9 +34,9 @@ import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Badge } from "../atoms/badge";
 import { necessityServices } from "@/services/necessities.services";
-import { usersServices } from "@/services/users.services";
 import { UserContext, UserContextSchema } from "@/contexts/user.context";
 import { useFieldArray } from "react-hook-form";
+import { auth } from "../../services/auth.service";
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [states, setStates] = useState<
@@ -89,7 +89,7 @@ const RegisterForm = () => {
 
     (async () => {
       try {
-        const savedUser = await usersServices.create(values);
+        const savedUser = await auth.register(values);
         if (savedUser) {
           setIsAuthenticated(true);
           update(savedUser);

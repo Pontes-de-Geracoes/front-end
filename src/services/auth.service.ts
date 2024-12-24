@@ -2,7 +2,12 @@ import Cookies from "js-cookie";
 import { LoginSchema } from "../schemes/user/login.scheme";
 import { RegisterScheme } from "../schemes/user/register.schema";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
-import { api, handleResponse, handleServerError } from "../utils/http";
+import {
+  api,
+  getConfig,
+  handleResponse,
+  handleServerError,
+} from "../utils/http";
 
 type LoginResponse = {
   token: string;
@@ -36,30 +41,40 @@ const login = async (user: LoginSchema): Promise<UserInfoScheme> => {
   }
 };
 
-const logOutUser = (): void => {
+const logOut = (): void => {
   Cookies.remove(COOKIE_NAMES.TOKEN);
   window.location.reload();
 };
 
-const registerUser = async (
+const register = async (
   data: Omit<RegisterScheme, "confirmPassword">
-): Promise<boolean> => {
+): Promise<UserInfoScheme> => {
+  const necessities = data.necessities.map((necessity) => necessity.id);
+  const serializedData = {
+    ...data,
+    necessities,
+  };
   try {
-    const res = await api.post(AUTH_ENDPOINTS.REGISTER, data);
-    return handleResponse(res, 201);
+    const res = handleResponse(
+      await api.post(AUTH_ENDPOINTS.REGISTER, serializedData),
+      201
+    );
+
+    const { token, ...userRes } = res;
+    Cookies.set("token", token, { expires: 7 });
+    return userRes.user;
   } catch (e) {
     handleServerError(e);
-    return false;
+    return <UserInfoScheme>{};
   }
 };
 
-const validatingToken = async (token: string): Promise<UserInfoScheme> => {
+const validatingToken = async (): Promise<UserInfoScheme> => {
   try {
-    const res = await api.get<UserInfoScheme>(AUTH_ENDPOINTS.PROFILE, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await api.get<UserInfoScheme>(
+      AUTH_ENDPOINTS.PROFILE,
+      getConfig()
+    );
     return handleResponse<UserInfoScheme>(res, 200);
   } catch (e) {
     handleServerError(e);
@@ -69,7 +84,7 @@ const validatingToken = async (token: string): Promise<UserInfoScheme> => {
 
 export const auth = {
   login,
-  logOutUser,
-  registerUser,
+  logOutUser: logOut,
+  register,
   validatingToken,
 };
