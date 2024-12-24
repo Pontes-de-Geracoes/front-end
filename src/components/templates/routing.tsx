@@ -20,7 +20,7 @@ const Routing = () => {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="connections" element={<Connections />} />
-            <Route path="/" element={<LoggedOnly />}>
+            <Route element={<LoggedOnly />}>
               <Route path="profile" element={<Profile />} />
             </Route>
             <Route path="/500" element={<ServerError />} />

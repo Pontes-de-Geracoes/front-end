@@ -8,6 +8,7 @@ import { auth } from "../../services/auth.service";
 
 const Login = () => {
   const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       if (await auth.validatingToken()) {
@@ -18,6 +19,7 @@ const Login = () => {
       }
     })();
   }, [navigate]);
+
   return (
     <Container variant={"main"} as="main">
       <Container

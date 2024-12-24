@@ -30,7 +30,6 @@ const Hero = () => {
       </div>
       <img
         src="/imgs/hero.svg"
-        alt=""
         className="md:w-2/5 w-full flex justify-center self"
       />
     </Container>

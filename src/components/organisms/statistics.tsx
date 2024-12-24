@@ -7,16 +7,6 @@ const cards = [
     title: "75%",
     description: "Jovens voluntários cadastrados",
   },
-  /*  {
-   id: 2,
-   title: "90%",
-   description: "Idosos cadastrados",
- },
- {
-   id: 3,
-   title: "100%",
-   description: "Satisfação dos usuários",
- }, */
   {
     id: 4,
     title: "100%",

@@ -8,6 +8,7 @@ import { toast } from "../../hooks/use-toast";
 
 const Register = () => {
   const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       if (await auth.validatingToken()) {
@@ -18,6 +19,7 @@ const Register = () => {
       }
     })();
   }, [navigate]);
+
   return (
     <Container variant={"main"} as="main">
       <Container variant={"firstSection"}>

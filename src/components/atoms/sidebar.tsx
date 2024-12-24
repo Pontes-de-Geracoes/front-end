@@ -7,7 +7,7 @@ import {
   SheetDescription,
 } from "@/components/atoms/sheet";
 import Logo from "./logo";
-import { routes } from "../../utils/route";
+import { routes } from "../../utils/routes";
 import Anchor from "./anchor";
 
 export const SideBar = () => {
