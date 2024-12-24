@@ -31,7 +31,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../atoms/pagination";
-import { usersServices } from "../../services/users.services";
 import { UserContext } from "../../contexts/user.context";
 import {
   Dialog,
@@ -47,6 +46,7 @@ import { NavLink } from "react-router";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
 import { Checkbox } from "../atoms/checkbox";
+import { services } from "../../services/service";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -101,13 +101,14 @@ const FindNewFriend = () => {
 
   useEffect(() => {
     (async () => {
-      let usersFetch = await usersServices.getAll();
+      let usersFetch = await services.get<UserCardScheme[]>({
+        url: "/users",
+        withCredentials: false,
+      });
 
-      if (isAuthenticated) {
+      if (isAuthenticated)
         usersFetch = usersFetch.filter((user) => user.id !== userInfo.id);
-      }
 
-      // shuffle the array
       usersFetch = usersFetch.sort(() => Math.random() - 0.5);
       setUsers(usersFetch);
     })();

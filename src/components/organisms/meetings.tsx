@@ -36,7 +36,7 @@ import MeetingCard from "../molecules/meeetingCard/meeeting-card";
 import MeetingModal from "../molecules/meeetingCard/meeting-modal";
 import { MeetingCardScheme } from "../../schemes/meeting/meeting-card.scheme";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
-import { meetingsServices } from "../../services/meetings.services";
+import { services } from "../../services/service";
 
 const profileMeetingsForm = z.object({
   name: z.string(),
@@ -59,8 +59,9 @@ const Meetings = () => {
 
   useEffect(() => {
     (async () => {
-      const fetchMeetings =
-        (await meetingsServices.getAllByUserID(user.id)) || [];
+      const fetchMeetings = await services.get<MeetingCardScheme[]>({
+        url: `/meetings/user/${user.id}`,
+      });
       setMeetings(fetchMeetings);
     })();
   }, [user.id, selectedMeeting]);
@@ -76,7 +77,6 @@ const Meetings = () => {
   });
 
   const { name, status, date, friendName } = form.watch();
-
   const { paginatedMeetings, totalPages } = useMemo(() => {
     let filtered = meetings;
 

@@ -28,16 +28,16 @@ const COOKIE_CONFIG = {
   expires: 7,
 } as const;
 
-const login = async (user: LoginSchema): Promise<UserInfoScheme> => {
+const login = async (user: LoginSchema): Promise<UserInfoScheme | null> => {
   try {
     const res = await api.post<LoginResponse>(AUTH_ENDPOINTS.LOGIN, user);
     const { token, user: userInfo } = handleResponse<LoginResponse>(res, 200);
-
     Cookies.set(COOKIE_NAMES.TOKEN, token, COOKIE_CONFIG);
+
     return userInfo;
   } catch (e) {
     handleServerError(e);
-    return {} as UserInfoScheme;
+    return null;
   }
 };
 
@@ -48,15 +48,14 @@ const logOut = (): void => {
 
 const register = async (
   data: Omit<RegisterScheme, "confirmPassword">
-): Promise<UserInfoScheme> => {
+): Promise<UserInfoScheme | null> => {
   const necessities = data.necessities.map((necessity) => necessity.id);
-  const serializedData = {
-    ...data,
-    necessities,
-  };
   try {
     const res = handleResponse(
-      await api.post(AUTH_ENDPOINTS.REGISTER, serializedData),
+      await api.post(AUTH_ENDPOINTS.REGISTER, {
+        ...data,
+        necessities,
+      }),
       201
     );
 
@@ -65,12 +64,15 @@ const register = async (
     return userRes.user;
   } catch (e) {
     handleServerError(e);
-    return <UserInfoScheme>{};
+    return null;
   }
 };
 
-const validatingToken = async (): Promise<UserInfoScheme> => {
+const validatingToken = async (): Promise<UserInfoScheme | null> => {
   try {
+    if (!Cookies.get(COOKIE_NAMES.TOKEN)) {
+      return {} as UserInfoScheme;
+    }
     const res = await api.get<UserInfoScheme>(
       AUTH_ENDPOINTS.PROFILE,
       getConfig()
@@ -78,7 +80,7 @@ const validatingToken = async (): Promise<UserInfoScheme> => {
     return handleResponse<UserInfoScheme>(res, 200);
   } catch (e) {
     handleServerError(e);
-    return {} as UserInfoScheme;
+    return null;
   }
 };
 

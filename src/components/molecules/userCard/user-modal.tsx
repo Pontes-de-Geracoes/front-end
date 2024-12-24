@@ -47,7 +47,7 @@ import {
 } from "../../../schemes/meeting/meeting-create.scheme";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../../../contexts/user.context";
-import { meetingsServices } from "../../../services/meetings.services";
+import { services } from "../../../services/service";
 
 export function UserModal({ user, onClose }: UserModalProps) {
   const { user: userInfo } = useContext(UserContext);
@@ -58,22 +58,27 @@ export function UserModal({ user, onClose }: UserModalProps) {
       description: "",
       message: "",
       status: "pending",
-      sender: userInfo.id,
-      recipient: user?.id,
+      sender: {
+        id: userInfo.id,
+      },
+      recipient: {
+        id: user?.id,
+      },
     },
   });
-  form.setValue("sender", userInfo.id);
-  form.setValue("recipient", user?.id as number);
+  form.setValue("sender.id", userInfo.id);
+  form.setValue("recipient.id", user?.id as number);
 
-  /* I want check if has some error in the form if the form change with reack hook forms  */
   useEffect(() => {
     console.log(form.formState.errors);
   }, [form.formState.errors]);
 
   const onSubmit = async (values: MeetingCreateScheme) => {
     console.log(values);
-
-    const newMeeting = await meetingsServices.create(values);
+    const newMeeting = await services.post({
+      url: "/meetings",
+      data: values,
+    });
 
     if (!newMeeting) {
       return toast({
@@ -82,17 +87,6 @@ export function UserModal({ user, onClose }: UserModalProps) {
         variant: "destructive",
       });
     }
-
-    /*   toast({
-      title: "Encontro solicitado",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">
-            {JSON.stringify(newMeeting, null, 2)}
-          </code>
-        </pre>
-      ),
-    }); */
 
     toast({
       title: "Encontro solicitado com sucesso.",

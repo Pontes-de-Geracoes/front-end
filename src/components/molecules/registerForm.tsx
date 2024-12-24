@@ -33,10 +33,11 @@ import {
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Badge } from "../atoms/badge";
-import { necessityServices } from "@/services/necessities.services";
 import { UserContext, UserContextSchema } from "@/contexts/user.context";
 import { useFieldArray } from "react-hook-form";
 import { auth } from "../../services/auth.service";
+import { services } from "../../services/service";
+import { NecessityScheme } from "../../schemes/necessity/necessity.scheme";
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [states, setStates] = useState<
@@ -79,7 +80,10 @@ const RegisterForm = () => {
 
   useEffect(() => {
     (async () => {
-      const necessitiesFetch = await necessityServices.getAll();
+      const necessitiesFetch = await services.get<NecessityScheme[]>({
+        url: "/necessities",
+        withCredentials: false,
+      });
       setNecessities(necessitiesFetch);
     })();
   }, []);

@@ -37,11 +37,11 @@ import {
 } from "../../atoms/alert-dialog";
 import { MeetingCardScheme } from "../../../schemes/meeting/meeting-card.scheme";
 import { format, parseISO } from "date-fns";
-import { meetingsServices } from "../../../services/meetings.services";
 import {
   meetingUpdateScheme,
   MeetingUpdateScheme,
 } from "../../../schemes/meeting/meeting.-update.scheme";
+import { services } from "../../../services/service";
 
 type MeetingModalProps = Readonly<{
   meeting?: MeetingCardScheme;
@@ -62,12 +62,12 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
     },
   });
 
-  /*   useEffect(() => {
-    console.log(form.formState.errors);
-  }, [form.formState.errors]); */
-
   const onSubmit = async (values: MeetingUpdateScheme) => {
-    await meetingsServices.update(meeting?.id as number, values);
+    await services.put({
+      url: `/meetings/${meeting?.id}`,
+      data: values,
+    });
+
     if (values.status === "canceled") {
       toast({
         title: "Encontro cancelado",
