@@ -90,7 +90,6 @@ const RegisterForm = () => {
     (async () => {
       try {
         const savedUser = await usersServices.create(values);
-        console.log(savedUser);
         if (savedUser) {
           setIsAuthenticated(true);
           update(savedUser);

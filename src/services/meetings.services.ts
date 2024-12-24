@@ -1,21 +1,23 @@
-import Cookies from "js-cookie";
 import { MeetingScheme } from "../schemes/meeting/meeting.scheme";
-import { api, handleServerError } from "../utils/http";
+import {
+  api,
+  getConfig,
+  handleResponse,
+  handleServerError,
+} from "../utils/http";
 import { MeetingCreateScheme } from "../schemes/meeting/meeting-create.scheme";
 import { MeetingCardScheme } from "../schemes/meeting/meeting-card.scheme";
 import { MeetingUpdateScheme } from "../schemes/meeting/meeting.-update.scheme";
 
-const token = Cookies.get("token");
+type Result<T> = {
+  data: T | null;
+  error: string | null;
+};
 
 const getAll = async () => {
   try {
-    const res = await api.get<MeetingScheme[]>("/meetings", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    const res = await api.get<MeetingScheme[]>("/meetings", getConfig());
+    return handleResponse(res, 200);
   } catch (e) {
     handleServerError(e);
     return <MeetingScheme[]>{};
@@ -24,13 +26,11 @@ const getAll = async () => {
 
 const getById = async (id: number) => {
   try {
-    const res = await api.get<MeetingCardScheme[]>(`/meetings/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    const res = await api.get<MeetingCardScheme[]>(
+      `/meetings/${id}`,
+      getConfig()
+    );
+    return handleResponse(res, 200);
   } catch (e) {
     handleServerError(e);
     return <MeetingCardScheme>{};
@@ -39,70 +39,53 @@ const getById = async (id: number) => {
 
 const getAllByUserID = async (id: number) => {
   try {
-    const res = await api.get<MeetingCardScheme[]>(`/meetings/user/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    const res = await api.get<MeetingCardScheme[]>(
+      `/meetings/user/${id}`,
+      getConfig()
+    );
+    return handleResponse(res, 200);
   } catch (e) {
     handleServerError(e);
     return <MeetingCardScheme[]>{};
   }
 };
 
-const create = async (data: MeetingCreateScheme) => {
-  const serializedData = {
-    ...data,
-    sender: {
-      id: data.sender,
-    },
-    recipient: {
-      id: data.recipient,
-    },
-  };
-
+const create = async (
+  data: MeetingCreateScheme
+): Promise<Result<MeetingCreateScheme>> => {
   try {
     const res = await api.post<MeetingCreateScheme>(
       "/meetings",
-      serializedData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { ...data },
+      getConfig()
     );
-    if (res.status !== 201) throw new Error(JSON.stringify(res));
-    console.log(res.data);
-    return res.data;
+    return {
+      data: handleResponse(res, 201),
+      error: null,
+    };
   } catch (e) {
     handleServerError(e);
-    return <MeetingCreateScheme>{};
+    return { data: null, error: "Failed to create meeting" };
   }
 };
 
-/* Update */
-const update = async (id: number, data: Partial<MeetingUpdateScheme>) => {
-  const serializedData = {
-    ...data,
-  };
-
+const update = async (
+  id: number,
+  data: Partial<MeetingUpdateScheme>
+): Promise<Result<MeetingCardScheme>> => {
   try {
     const res = await api.put<MeetingCardScheme>(
       `/meetings/${id}`,
-      serializedData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { ...data },
+      getConfig()
     );
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    return {
+      data: handleResponse(res, 200),
+      error: null,
+    };
   } catch (e) {
     handleServerError(e);
-    return null;
+    return { data: null, error: "Failed to update meeting" };
   }
 };
 

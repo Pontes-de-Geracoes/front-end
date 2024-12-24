@@ -1,4 +1,4 @@
-import { api, handleServerError } from "../utils/http";
+import { api, handleResponse, handleServerError } from "../utils/http";
 import { UserCardScheme } from "../schemes/user/userCard.schema";
 import { RegisterScheme } from "@/schemes/user/register.schema";
 import { UserInfoScheme } from "@/schemes/user/userContext.scheme";
@@ -7,8 +7,7 @@ import Cookies from "js-cookie";
 const getAll = async () => {
   try {
     const res = await api.get<UserCardScheme[]>("/users", {});
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    return handleResponse(res, 200);
   } catch (e) {
     handleServerError(e);
     return <UserCardScheme[]>{};
@@ -17,21 +16,20 @@ const getAll = async () => {
 
 const create = async (data: RegisterScheme) => {
   const necessities = data.necessities.map((necessity) => necessity.id);
-  const { ...serializedData } = {
+  const serializedData = {
     ...data,
     necessities,
   };
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res = await api.post<any & { token: string }>(
-      "/auth/register",
-      serializedData
-    );
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    const { token, ...userRes } = res.data;
+    const request = await api.post<
+      { user: UserInfoScheme } & { token: string }
+    >("/auth/register", serializedData);
+
+    const res = handleResponse(request, 201);
+    const { token, ...userRes } = res;
     Cookies.set("token", token, { expires: 7 });
-    return userRes.user as UserInfoScheme;
+    return userRes.user;
   } catch (e) {
     handleServerError(e);
     return <UserInfoScheme>{};

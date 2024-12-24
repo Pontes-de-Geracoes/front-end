@@ -1,11 +1,10 @@
 import { NecessityScheme } from "@/schemes/necessity/necessity.scheme";
-import { api, handleServerError } from "@/utils/http";
+import { api, handleResponse, handleServerError } from "@/utils/http";
 
 const getAll = async () => {
   try {
     const res = await api.get<NecessityScheme[]>("/necessities");
-    if (res.status !== 200) throw new Error(JSON.stringify(res));
-    return res.data;
+    return handleResponse(res, 200);
   } catch (e) {
     handleServerError(e);
     return <NecessityScheme[]>{};
@@ -13,6 +12,5 @@ const getAll = async () => {
 };
 
 export const necessityServices = {
-    getAll
-  };
-  
+  getAll,
+};

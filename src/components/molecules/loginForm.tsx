@@ -18,8 +18,8 @@ import { useContext, useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
 import { Link } from "react-router";
-import { login } from "../../services/auth/login.service";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
+import { auth } from "../../services/auth.service";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -40,20 +40,9 @@ const LoginForm = () => {
   async function onSubmit(values: LoginSchema) {
     setLoading(true);
 
-    const isLogged = await login(values);
+    const isLogged = await auth.login(values);
 
     if (isLogged) {
-      /*  toast({
-        title: "Encontro confirmado",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(isLogged, null, 2)}
-            </code>
-          </pre>
-        ),
-      }); */
-
       setIsAuthenticated(true);
       update(isLogged);
       return (window.location.href = "/");

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { UserInfoScheme } from "../schemes/user/userContext.scheme";
-import { validatingToken } from "../services/auth/validedToken.service";
 import { useNavigate } from "react-router";
+import { auth } from "../services/auth.service";
 
 export type UserContextSchema = {
   user: UserInfoScheme;
@@ -25,7 +25,7 @@ const emptyUser: UserInfoScheme = {
   town: "",
   bio: "",
   meetings: [],
-  necessities: []
+  necessities: [],
 };
 
 export const UserContext = React.createContext<UserContextSchema>({
@@ -42,21 +42,18 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const navigate = useNavigate();
-  //const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = React.useState<UserInfoScheme>(emptyUser);
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   async function checkingToken() {
-    //setIsLoading(true);
-
     const token = Cookies.get("token");
 
     if (!token) setIsAuthenticated(false);
     else checkingToken(token);
 
     async function checkingToken(token: string) {
-      if (await validatingToken(token)) {
-        const user = await validatingToken(token);
+      if (await auth.validatingToken(token)) {
+        const user = await auth.validatingToken(token);
         if (!user) setIsAuthenticated(false);
         else {
           setIsAuthenticated(true);
@@ -64,16 +61,6 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
     }
-
-    /*  toast({
-      title: "Encontro confirmado",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(user, null, 2)}</code>
-        </pre>
-      ),
-    }); */
-    //setIsLoading(false);
   }
 
   function logOut() {
