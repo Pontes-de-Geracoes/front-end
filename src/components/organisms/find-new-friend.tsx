@@ -25,17 +25,6 @@ import UserCard from "../molecules/userCard/user-card";
 import { UserModal } from "../molecules/userCard/user-modal";
 
 import { UserContext } from "../../contexts/user.context";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../atoms/dialog";
-import { Badge } from "../atoms/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "../atoms/avatar";
-import { Typography } from "../atoms/typography";
-import { NavLink } from "react-router";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
 import { Checkbox } from "../atoms/checkbox";
@@ -337,102 +326,11 @@ const FindNewFriend = () => {
             onClick={() => setSelectedUser(user)}
           />
         ))}
-        {selectedUser && isAuthenticated && (
+        {selectedUser && (
           <UserModal
             user={selectedUser}
             onClose={() => setSelectedUser(null)}
           />
-        )}
-        {/* TODO: refactor - create a component separate for this part or in the UserModal component*/}
-        {!isAuthenticated && selectedUser && (
-          <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
-            <DialogContent className="sm:max-w-[600px] h-[90%] text-black   rounded-3xl text-center">
-              <DialogHeader className="flex flex-col items-center relative">
-                <div className="absolute -top-2 -left-3 flex  gap-2">
-                  <Badge className="">
-                    {selectedUser?.type === "elderly" ? "Idoso" : "Voluntário"}
-                  </Badge>
-                  <Badge>
-                    {selectedUser?.meetingPreference === "in person"
-                      ? "Presencial"
-                      : selectedUser?.meetingPreference === "hybrid"
-                      ? "Híbrido"
-                      : "Remoto"}
-                  </Badge>
-                </div>
-                <Avatar className="w-32 h-32">
-                  <AvatarImage
-                    src={selectedUser?.photo}
-                    alt={selectedUser?.name}
-                  />
-                  <AvatarFallback>
-                    {selectedUser?.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <DialogTitle className="mt-4 text-center space-y-5">
-                  <div className="flex flex-col ">
-                    <Typography variant={"h3"}>{selectedUser?.name}</Typography>
-                    <Typography variant={"small"} className="text-gray-500">
-                      {selectedUser?.town} - {selectedUser?.state}
-                    </Typography>
-                  </div>
-                  <div className="relative flex overflow-x-hidden max-w-[240px] sm:max-w-[390px] md:max-w-[500px] ">
-                    <div className="animate-marquee whitespace-nowrap space-x-2 ">
-                      {selectedUser.necessities.map((necessity) => (
-                        <Badge
-                          key={necessity.id}
-                          className="bg-primary/80 w-fit h-fit"
-                        >
-                          {necessity.name}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="absolute top-0 animate-marquee2 whitespace-nowrap space-x-2 ">
-                      {selectedUser.necessities.map((necessity) => (
-                        <Badge
-                          key={necessity.id}
-                          className="bg-primary/80 w-fit h-fit"
-                        >
-                          {necessity.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="grid gap-4 py-4">
-                    <Typography className="text-sm text-gray-600">
-                      {selectedUser?.bio}
-                    </Typography>
-                  </div>
-                </DialogTitle>
-              </DialogHeader>
-              <div className="">
-                <Typography variant={"h3"}>
-                  Se junte em nossa comunidade para ser conectar com outras
-                  gerações.
-                </Typography>
-              </div>
-              <DialogFooter>
-                <div className="flex gap-4 w-full justify-center">
-                  <NavLink
-                    className="w-full"
-                    onClick={() => setSelectedUser(null)}
-                    to={"/login"}
-                  >
-                    <Button className="w-full">Faça login</Button>
-                  </NavLink>
-                  <NavLink
-                    className="w-full"
-                    onClick={() => setSelectedUser(null)}
-                    to={"/register"}
-                  >
-                    <Button className="w-full" variant="outline">
-                      Cadastrar
-                    </Button>
-                  </NavLink>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         )}
       </div>
       <CustomPagination
