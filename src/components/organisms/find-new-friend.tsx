@@ -23,14 +23,7 @@ import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Button } from "../atoms/button";
 import UserCard from "../molecules/userCard/user-card";
 import { UserModal } from "../molecules/userCard/user-modal";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../atoms/pagination";
+
 import { UserContext } from "../../contexts/user.context";
 import {
   Dialog,
@@ -47,6 +40,8 @@ import Container from "../atoms/container";
 import Logo from "../atoms/logo";
 import { Checkbox } from "../atoms/checkbox";
 import { services } from "../../services/services";
+import { NecessityScheme } from "../../schemes/necessity/necessity.scheme";
+import CustomPagination from "../atoms/CustomPagination";
 
 const filterScheme = z.object({
   type: z.string(),
@@ -62,7 +57,7 @@ const FindNewFriend = () => {
   const { user: userInfo, isAuthenticated } = useContext(UserContext);
 
   /* Users states */
-  const [users, setUsers] = useState<UserCardScheme[]>([] as UserCardScheme[]);
+  const [users, setUsers] = useState<UserCardScheme[]>([]);
   const [selectedUser, setSelectedUser] = useState<null | UserCardScheme>(null);
 
   /* Pagination state */
@@ -97,6 +92,7 @@ const FindNewFriend = () => {
       const cities = await fetchCities(form.getValues("uf"));
       setCities(cities);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.watch("uf")]);
 
   useEffect(() => {
@@ -120,10 +116,8 @@ const FindNewFriend = () => {
     control: form.control,
   });
 
-  // Memoize filtered results
   const calculateNecessityMatches = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (userNecessities: any[]) => {
+    (userNecessities: NecessityScheme[]) => {
       if (!userInfo?.necessities || !userNecessities) return 0;
 
       return userInfo.necessities.filter((userNeed) =>
@@ -194,13 +188,13 @@ const FindNewFriend = () => {
     formValues.town,
   ]);
 
-  if (users.length === 0) {
+  if (users.length === 0)
     return (
       <Container variant="section" className="flex justify-center items-center">
         <Logo size={128} className="animate-bounce" />
       </Container>
     );
-  }
+
   return (
     <>
       <Form {...form}>
@@ -343,14 +337,13 @@ const FindNewFriend = () => {
             onClick={() => setSelectedUser(user)}
           />
         ))}
-
         {selectedUser && isAuthenticated && (
           <UserModal
             user={selectedUser}
             onClose={() => setSelectedUser(null)}
           />
         )}
-
+        {/* TODO: refactor - create a component separate for this part or in the UserModal component*/}
         {!isAuthenticated && selectedUser && (
           <Dialog open={true} onOpenChange={() => setSelectedUser(null)}>
             <DialogContent className="sm:max-w-[600px] h-[90%] text-black   rounded-3xl text-center">
@@ -442,42 +435,11 @@ const FindNewFriend = () => {
           </Dialog>
         )}
       </div>
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      setCurrentPage((prev) => prev - 1);
-                    }
-                  }}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(index + 1)}
-                    isActive={currentPage === index + 1}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+      <CustomPagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </>
   );
 };

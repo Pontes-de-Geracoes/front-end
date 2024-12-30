@@ -24,19 +24,12 @@ import { BookHeart } from "lucide-react";
 
 import { useContext, useEffect, useMemo, useState } from "react";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../atoms/pagination";
 import MeetingCard from "../molecules/meeetingCard/meeeting-card";
 import MeetingModal from "../molecules/meeetingCard/meeting-modal";
 import { MeetingCardScheme } from "../../schemes/meeting/meeting-card.scheme";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
 import { services } from "../../services/services";
+import CustomPagination from "../atoms/CustomPagination";
 
 const profileMeetingsForm = z.object({
   name: z.string(),
@@ -135,9 +128,6 @@ const Meetings = () => {
       </Container>
     );
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   return (
     <Container
       as="section"
@@ -215,45 +205,11 @@ const Meetings = () => {
           onClick={() => setSelectedMeeting(meeting)}
         />
       ))}
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (currentPage > 1) handlePageChange(currentPage - 1);
-                }}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href="#"
-                  isActive={currentPage === page}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handlePageChange(page);
-                  }}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (currentPage < totalPages)
-                    handlePageChange(currentPage + 1);
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      <CustomPagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
       {selectedMeeting && (
         <MeetingModal
           meeting={selectedMeeting}
