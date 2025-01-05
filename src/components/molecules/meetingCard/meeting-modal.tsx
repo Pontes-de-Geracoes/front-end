@@ -5,7 +5,6 @@ import { Button } from "../../atoms/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../../atoms/dialog";
@@ -246,6 +245,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                     Ansioso para o encontro ? Aguarde só mais um pouco que{" "}
                     {who?.name} vai confirmar com toda certeza.
                   </Typography>
+
                   <Button onClick={onClose}>fechar</Button>
                 </>
               ))}
@@ -269,7 +269,6 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
               </>
             )}
           </div>
-          <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>
     )
