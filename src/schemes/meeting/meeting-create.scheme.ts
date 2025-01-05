@@ -6,8 +6,12 @@ export const meetingCreateScheme = meetingScheme
     id: true,
   })
   .extend({
-    sender: z.number(),
-    recipient: z.number(),
+    sender: z.object({
+      id: z.number(),
+    }),
+    recipient: z.object({
+      id: z.number(),
+    }),
   });
 
 export type MeetingCreateScheme = z.infer<typeof meetingCreateScheme>;

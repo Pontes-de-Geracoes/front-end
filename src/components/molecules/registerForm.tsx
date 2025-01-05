@@ -33,24 +33,24 @@ import {
 import { DatePicker } from "../atoms/date-picker";
 import { fetchCities, fetchStates } from "../../utils/ibge";
 import { Badge } from "../atoms/badge";
-import { necessityServices } from "@/services/necessities.services";
-import { usersServices } from "@/services/users.services";
 import { UserContext, UserContextSchema } from "@/contexts/user.context";
 import { useFieldArray } from "react-hook-form";
+import { auth } from "../../services/auth.service";
+import { services } from "../../services/services";
+import { NecessityScheme } from "../../schemes/necessity/necessity.scheme";
+
 const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
+  const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
   const [states, setStates] = useState<
     { id: number; sigla: string; nome: string }[]
   >([]);
-  const [cities, setCities] = useState<{ id: number; nome: string }[]>([]);
-
   const [necessities, setNecessities] = useState<
     { id: number; name: string; description: string }[]
   >([]);
   const { setIsAuthenticated, update } = useContext(
     UserContext
   ) as UserContextSchema;
-
   const form = useForm<RegisterScheme>({
     resolver: zodResolver(registerScheme),
     defaultValues: {
@@ -61,12 +61,20 @@ const RegisterForm = () => {
       necessities: [],
     },
   });
-
   const userType = form.watch("type");
+
   useEffect(() => {
     (async () => {
+      // Fetch states
       const states = await fetchStates();
-      setStates(states);
+      setStates(states || []);
+
+      // Fetch necessities
+      const necessitiesFetch = await services.get<NecessityScheme[]>({
+        url: "/necessities",
+        withCredentials: false,
+      });
+      setNecessities(necessitiesFetch || []);
     })();
   }, []);
 
@@ -77,41 +85,19 @@ const RegisterForm = () => {
     })();
   }, [form.watch("state")]);
 
-  useEffect(() => {
-    (async () => {
-      const necessitiesFetch = await necessityServices.getAll();
-      setNecessities(necessitiesFetch);
-    })();
-  }, []);
-
-  function onSubmit(values: RegisterScheme) {
+  async function onSubmit(values: RegisterScheme) {
     setLoading(true);
-
-    (async () => {
-      try {
-        const savedUser = await usersServices.create(values);
-        console.log(savedUser);
-        if (savedUser) {
-          setIsAuthenticated(true);
-          update(savedUser);
-          return (window.location.href = "/");
-        }
-      } catch (e) {
-        let errorMessage: string = "Erro desconhecido";
-
-        if (e instanceof Error) {
-          errorMessage = e.message;
-        }
-
-        toast({
-          title: "Não foi possível realizar o cadastro",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
-    })();
-
+    const savedUser = await auth.register(values);
     setLoading(false);
+    if (!savedUser)
+      return toast({
+        title: "Não foi possível realizar o cadastro",
+        variant: "destructive",
+      });
+
+    setIsAuthenticated(true);
+    update(savedUser);
+    window.location.href = "/";
   }
 
   const { fields, append, remove } = useFieldArray({
@@ -123,9 +109,7 @@ const RegisterForm = () => {
     // Check if necessity already exists
     const exists = fields.some((field) => field.id === selectedNecessity.id);
 
-    if (!exists) {
-      append(selectedNecessity);
-    }
+    if (!exists) append(selectedNecessity);
   };
 
   const handleNecessityRemoval = (necessityToRemove: any) => {
@@ -133,9 +117,7 @@ const RegisterForm = () => {
       (field) => field.id === necessityToRemove.id
     );
 
-    if (index !== -1) {
-      remove(index);
-    }
+    if (index !== -1) remove(index);
   };
   return (
     <Form {...form}>

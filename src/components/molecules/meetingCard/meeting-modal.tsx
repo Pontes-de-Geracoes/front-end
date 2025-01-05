@@ -5,7 +5,6 @@ import { Button } from "../../atoms/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../../atoms/dialog";
@@ -37,11 +36,11 @@ import {
 } from "../../atoms/alert-dialog";
 import { MeetingCardScheme } from "../../../schemes/meeting/meeting-card.scheme";
 import { format, parseISO } from "date-fns";
-import { meetingsServices } from "../../../services/meetings.services";
 import {
   meetingUpdateScheme,
   MeetingUpdateScheme,
 } from "../../../schemes/meeting/meeting.-update.scheme";
+import { services } from "../../../services/services";
 
 type MeetingModalProps = Readonly<{
   meeting?: MeetingCardScheme;
@@ -62,12 +61,12 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
     },
   });
 
-  /*   useEffect(() => {
-    console.log(form.formState.errors);
-  }, [form.formState.errors]); */
-
   const onSubmit = async (values: MeetingUpdateScheme) => {
-    await meetingsServices.update(meeting?.id as number, values);
+    await services.put({
+      url: `/meetings/${meeting?.id}`,
+      data: values,
+    });
+
     if (values.status === "canceled") {
       toast({
         title: "Encontro cancelado",
@@ -88,7 +87,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   return (
     meeting && (
       <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[425px] h-[95%] overflow-y-scroll overflow-x-hidden rounded-3xl text-center">
+        <DialogContent className="sm:max-w-[425px] h-fit overflow-y-scroll overflow-x-hidden rounded-3xl text-center">
           <DialogHeader className="flex flex-col items-center relative">
             <div className="absolute -top-2 -left-3 flex mb-3 gap-2">
               <Badge className="">
@@ -201,7 +200,6 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                                   "message",
                                   `Encontro cancelado por ${user?.name}, ID: ${user?.id}.`
                                 );
-                                console.log();
                                 form.setValue("status", "canceled");
                                 form.setValue(
                                   "date",
@@ -247,6 +245,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                     Ansioso para o encontro ? Aguarde só mais um pouco que{" "}
                     {who?.name} vai confirmar com toda certeza.
                   </Typography>
+
                   <Button onClick={onClose}>fechar</Button>
                 </>
               ))}
@@ -270,7 +269,6 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
               </>
             )}
           </div>
-          <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>
     )

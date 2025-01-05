@@ -18,8 +18,8 @@ import { useContext, useState } from "react";
 import { loginSchema, LoginSchema } from "../../schemes/user/login.scheme";
 import { Typography } from "../atoms/typography";
 import { Link } from "react-router";
-import { login } from "../../services/auth/login.service";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
+import { auth } from "../../services/auth.service";
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
@@ -39,34 +39,19 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginSchema) {
     setLoading(true);
+    const isLogged = await auth.login(values);
+    setLoading(false);
 
-    const isLogged = await login(values);
-
-    if (isLogged) {
-      /*  toast({
-        title: "Encontro confirmado",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(isLogged, null, 2)}
-            </code>
-          </pre>
-        ),
-      }); */
-
-      setIsAuthenticated(true);
-      update(isLogged);
-      return (window.location.href = "/");
-    } else {
-      toast({
+    if (!isLogged)
+      return toast({
         title: "Usuário ou senha inválidos",
         description: "Por favor, tente novamente.",
         variant: "destructive",
       });
-    }
 
-    setLoading(false);
-    console.log(values);
+    setIsAuthenticated(true);
+    update(isLogged);
+    window.location.href = "/";
   }
 
   return (

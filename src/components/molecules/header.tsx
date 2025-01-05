@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { routes } from "../../utils/route";
+import { routes } from "../../utils/routes";
 import { Button } from "../atoms/button";
 import Container from "../atoms/container";
 import Logo from "../atoms/logo";
@@ -43,7 +43,7 @@ const Header = () => {
           </ul>
         </nav>
         <div>
-          {isAuthenticated ? (
+          {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
