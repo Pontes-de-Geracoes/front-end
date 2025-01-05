@@ -1,54 +1,29 @@
 import Container from "../atoms/container";
 import { Typography } from "../atoms/typography";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "../atoms/form";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../atoms/select";
-import { Input } from "../atoms/input";
-import { Button } from "../atoms/button";
-
 import { BookHeart } from "lucide-react";
-
 import { useContext, useEffect, useMemo, useState } from "react";
-
 import MeetingCard from "../molecules/meeetingCard/meeeting-card";
 import MeetingModal from "../molecules/meeetingCard/meeting-modal";
 import { MeetingCardScheme } from "../../schemes/meeting/meeting-card.scheme";
 import { UserContext, UserContextSchema } from "../../contexts/user.context";
 import { services } from "../../services/services";
 import CustomPagination from "../atoms/CustomPagination";
+import MeetingForm, { ProfileMeetingsForm } from "../molecules/meetingForm";
 
-const profileMeetingsForm = z.object({
-  name: z.string(),
-  friendName: z.string(),
-  sendByMe: z.boolean(),
-  date: z.date(),
-  status: z.enum(["pending", "confirm", "canceled", "all"]).optional(),
-});
-
-type ProfileMeetingsForm = z.infer<typeof profileMeetingsForm>;
 const Meetings = () => {
   const [meetings, setMeetings] = useState<MeetingCardScheme[]>([]);
   const { user } = useContext(UserContext) as UserContextSchema;
-
   const [selectedMeeting, setSelectedMeeting] =
     useState<null | MeetingCardScheme>(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [formValues, setFormValues] = useState<ProfileMeetingsForm>({
+    name: "",
+    friendName: "",
+    sendByMe: false,
+    date: new Date(),
+    status: undefined,
+  });
 
   useEffect(() => {
     if (user) {
@@ -62,36 +37,34 @@ const Meetings = () => {
     }
   }, [user, selectedMeeting]);
 
-  const form = useForm<ProfileMeetingsForm>({
-    resolver: zodResolver(profileMeetingsForm),
-    defaultValues: {
-      name: "",
-      friendName: "",
-      status: undefined,
-      date: new Date(),
-    },
-  });
-
-  const { name, status, date, friendName } = form.watch();
   const { paginatedMeetings, totalPages } = useMemo(() => {
     let filtered = meetings;
 
-    if (name || status || date.getDay() == new Date().getDay() || friendName) {
+    if (
+      formValues.name ||
+      formValues.status ||
+      formValues.date.getDay() == new Date().getDay() ||
+      formValues.friendName
+    ) {
       filtered = meetings.filter((meeting) => {
         const matchesName =
-          !name || meeting.name.toLowerCase().startsWith(name.toLowerCase());
+          !formValues.name ||
+          meeting.name.toLowerCase().startsWith(formValues.name.toLowerCase());
         const matchesWith =
-          !friendName ||
+          !formValues.friendName ||
           meeting.sender.name
             .toLowerCase()
-            .startsWith(friendName.toLowerCase()) ||
+            .startsWith(formValues.friendName.toLowerCase()) ||
           meeting.recipient.name
             .toLowerCase()
-            .startsWith(friendName.toLowerCase());
+            .startsWith(formValues.friendName.toLowerCase());
         const matchesStatus =
-          !status || status == "all" || meeting.status === status;
+          !formValues.status ||
+          formValues.status == "all" ||
+          meeting.status === formValues.status;
         const matchesDateRange =
-          date.getDay() == new Date().getDay() || meeting.date == date;
+          formValues.date.getDay() == new Date().getDay() ||
+          meeting.date == formValues.date;
 
         return matchesName && matchesStatus && matchesDateRange && matchesWith;
       });
@@ -104,7 +77,14 @@ const Meetings = () => {
     );
 
     return { paginatedMeetings, totalPages };
-  }, [meetings, name, status, date, friendName, currentPage]);
+  }, [
+    meetings,
+    formValues.name,
+    formValues.status,
+    formValues.date,
+    formValues.friendName,
+    currentPage,
+  ]);
 
   if (!meetings.length)
     return (
@@ -142,62 +122,7 @@ const Meetings = () => {
         <BookHeart size={48} />
         Meus Encontros
       </Typography>
-      <Form {...form}>
-        <form className="flex flex-col gap-2 w-full md:flex-row">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input placeholder="Nome do evento" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="friendName"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormControl>
-                  <Input placeholder="Nome do amigo" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem className="w-full ">
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Status" className="w-full" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="pending">Pendente</SelectItem>
-                    <SelectItem value="confirm">Confirmado</SelectItem>
-                    <SelectItem value="canceled">Cancelado</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button onClick={() => form.reset()} type="button">
-            Reseta filtros
-          </Button>
-        </form>
-      </Form>
+      <MeetingForm onFormChange={setFormValues} />
       {paginatedMeetings.map((meeting) => (
         <MeetingCard
           key={meeting.id}
