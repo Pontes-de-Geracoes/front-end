@@ -201,7 +201,6 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                                   "message",
                                   `Encontro cancelado por ${user?.name}, ID: ${user?.id}.`
                                 );
-                                console.log();
                                 form.setValue("status", "canceled");
                                 form.setValue(
                                   "date",

@@ -45,7 +45,7 @@ import {
   meetingCreateScheme,
   MeetingCreateScheme,
 } from "../../../schemes/meeting/meeting-create.scheme";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { UserContext } from "../../../contexts/user.context";
 import { services } from "../../../services/services";
 import { NavLink } from "react-router";
@@ -69,12 +69,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
     },
   });
 
-  useEffect(() => {
-    console.log(form.formState.errors);
-  }, [form.formState.errors]);
-
   const onSubmit = async (values: MeetingCreateScheme) => {
-    console.log(values);
     const newMeeting = await services.post({
       url: "/meetings",
       data: values,
