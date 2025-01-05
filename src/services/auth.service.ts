@@ -17,7 +17,7 @@ type LoginResponse = {
 const AUTH_ENDPOINTS = {
   LOGIN: "auth/login",
   PROFILE: "auth/profile",
-  REGISTER: "users/create",
+  REGISTER: "auth/register",
 } as const;
 
 const COOKIE_NAMES = {

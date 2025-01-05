@@ -39,23 +39,19 @@ const LoginForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(values: LoginSchema) {
     setLoading(true);
-
     const isLogged = await auth.login(values);
+    setLoading(false);
 
-    if (isLogged) {
-      setIsAuthenticated(true);
-      update(isLogged);
-      return (window.location.href = "/");
-    } else {
-      toast({
+    if (!isLogged)
+      return toast({
         title: "Usuário ou senha inválidos",
         description: "Por favor, tente novamente.",
         variant: "destructive",
       });
-    }
 
-    setLoading(false);
-    console.log(values);
+    setIsAuthenticated(true);
+    update(isLogged);
+    window.location.href = "/";
   }
 
   return (
