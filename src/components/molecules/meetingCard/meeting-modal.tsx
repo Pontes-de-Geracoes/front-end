@@ -10,19 +10,12 @@ import {
 } from "../../atoms/dialog";
 import {
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "../../atoms/form";
 import { Typography } from "../../atoms/typography";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "../../../hooks/use-toast";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../contexts/user.context";
-import { Textarea } from "../../atoms/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +34,8 @@ import {
   MeetingUpdateScheme,
 } from "../../../schemes/meeting/meeting.-update.scheme";
 import { services } from "../../../services/services";
+import Chat from "../../organisms/chat";
+import { ChatScheme } from "../../../schemes/chat/chat.scheme";
 
 type MeetingModalProps = Readonly<{
   meeting?: MeetingCardScheme;
@@ -57,23 +52,24 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
       type: meeting?.type,
       description: meeting?.description,
       status: meeting?.status,
-      message: "",
+      message: " ",
     },
   });
 
   const onSubmit = async (values: MeetingUpdateScheme) => {
-    await services.put({
+
+    if (values.status === "canceled") {
+      await services.put({
       url: `/meetings/${meeting?.id}`,
       data: values,
     });
-
-    if (values.status === "canceled") {
       toast({
         title: "Encontro cancelado",
       });
     }
 
     if (values.status === "confirm") {
+      startChat();
       toast({
         title: "Encontro confirmado",
       });
@@ -84,13 +80,77 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
   const who =
     meeting?.sender.id === user?.id ? meeting?.recipient : meeting?.sender;
 
+  const [showChat, setShowChat] = useState(false);
+  const [chat, setChat] = useState<ChatScheme | null>(null);
+
+  // Check if chat exists when component mounts
+  useEffect(() => {
+    const checkExistingChat = async () => {
+      if (meeting && meeting.status === "confirm") {
+        try {
+          const existingChat = await services.get<ChatScheme>({
+            url: `/chats/meeting/${meeting.id}`,
+          });
+          if (existingChat) {
+            setChat(existingChat);
+          }
+        } catch (error) {
+          // Chat doesn't exist yet, that's ok
+          console.log('No existing chat found');
+        }
+      }
+    };
+
+    checkExistingChat();
+  }, [meeting]);
+
+  const startChat = async () => {
+    try {
+      const response = await services.post<ChatScheme>({
+        url: `/chats/meeting/${meeting?.id}`,
+        data: {},
+      });
+      
+      if (response && response.id) {
+        setChat(response);
+        setShowChat(true);
+      } else {
+        console.error('Chat response does not contain ID:', response);
+        toast({
+          title: "Erro ao criar chat",
+          description: "Não foi possível criar o chat. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create chat:', error);
+      toast({
+        title: "Erro ao criar chat",
+        description: "Não foi possível criar o chat. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const openExistingChat = () => {
+    if (chat) {
+      setShowChat(true);
+    } else {
+      startChat();
+    }
+  };
+
+  if (showChat && chat) {
+    return <Chat chatId={chat.id} onClose={() => setShowChat(false)} />;
+  }
+
   return (
     meeting && (
       <Dialog open={true} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px] h-fit overflow-y-scroll overflow-x-hidden rounded-3xl text-center">
           <DialogHeader className="flex flex-col items-center relative">
             <div className="absolute -top-2 -left-3 flex mb-3 gap-2">
-              <Badge className="">
+              <Badge className="w-fit">
                 {who?.type === "elderly" ? "Idoso" : "Voluntário"}
               </Badge>
               <Badge
@@ -126,17 +186,11 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                   </Typography>
                 </div>
               </div>
-              <Typography variant={"blockquote"} className="font-medium py-14 ">
-                {meeting.description}
-              </Typography>
-              {/*  <Typography className="text-sm text-left  ">
-                Mensagem: {meeting.message}
-              </Typography> */}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="text-left flex flex-col gap-2">
-            <div className="flex justify-between">
+          <div className="text-left flex flex-col gap-2 ">
+            <div className="flex justify-between pb-3">
               <Typography variant={"h4"} className="">
                 {meeting.name}
               </Typography>
@@ -153,30 +207,8 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                 /*  It's nice make something cool when accept some meeting */
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem className="py-4">
-                          <FormLabel>
-                            Enviar uma mensagem com seu contato para{" "}
-                            {meeting.sender.name} para prosseguírem com o
-                            encontro.
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="Mensagem" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Seria legal vocês compartilharem WhatsApp levando em
-                            consideração o publico alvo da plataforma.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     {/* maybe is good make a confirm alert */}
-                    <div className="flex justify-end gap-2 py-3">
+                    <div className="flex justify-center gap-2 py-3 ">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive">Cancelar</Button>
@@ -209,7 +241,6 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                                       : meeting.date
                                   )
                                 );
-
                                 form.handleSubmit(onSubmit)();
                               }}
                             >
@@ -229,7 +260,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                                 : meeting.date
                             )
                           );
-                          form.setValue("status", "confirm");
+                          form.setValue("status", "confirm"); 
 
                           form.handleSubmit(onSubmit)();
                         }}
@@ -239,24 +270,25 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                     </div>
                   </form>
                 </Form>
-              ) : (
+              )
+              : (
                 <>
                   <Typography className="text-center">
                     Ansioso para o encontro ? Aguarde só mais um pouco que{" "}
                     {who?.name} vai confirmar com toda certeza.
                   </Typography>
-
-                  <Button onClick={onClose}>fechar</Button>
+                  <Button onClick={onClose}>Fechar</Button>
                 </>
               ))}
             {meeting.status === "confirm" && (
               <div className="flex flex-col gap-2 text-center">
                 <Typography>
-                  {who?.name} confirmou o encontro, não esqueça de comparecer.
-                  Segue a mensagem que {who?.name} enviou:
+                  Encontro confirmado! {chat ? 'Continue' : 'Comece a'} conversar com {who?.name}.
                 </Typography>
-                <Typography className="mb-2">{meeting.message}</Typography>
-                <Button onClick={onClose}>Fechar</Button>
+                <Button onClick={openExistingChat}>
+                  {chat ? 'Abrir Chat' : 'Iniciar Chat'}
+                </Button>
+                <Button onClick={onClose} variant="outline">Fechar</Button>
               </div>
             )}
             {meeting.status === "canceled" && (
@@ -265,7 +297,7 @@ const MeetingModal = ({ meeting, onClose }: MeetingModalProps) => {
                   Infelizmente {who?.name} cancelou o encontro, todo mundo tem
                   seus dias talvez em outro momento.
                 </Typography>
-                <Button onClick={onClose}>fechar</Button>
+                <Button onClick={onClose}>Fechar</Button>
               </>
             )}
           </div>
